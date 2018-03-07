@@ -33,19 +33,21 @@ void extractWords(ifstream &liste, vector<string> &mots, vector<float> &proba) {
     return;
 }
 
-int analyzeWord(const string &lemot, int lettertab[27][27]) {
+int analyzeWord(const string &lemot, int lettertab[27][27][27]) {
     int pr1=0; //lettre précédente, intialisée à rien (0)
+    int pr2=0; //lettre présente 2 lettre avant, intialisée à rien (0)
     int act; //lettre actuelle
     int nb=0; //nombre total de lettre traitées
     for(unsigned int i=0; i<lemot.size(); i++) {
         act=lemot.at(i)-96; // retourne le code ascii de la lettre, puis ramené à a=1
         if(act>0 && act <27) { //on ignore tout caractère accentué
-            lettertab[act][pr1]++;
+            lettertab[act][pr1][pr2]++;
+            pr2=pr1;
             pr1=act; //lettre actuelle devient la précédente
             nb++;
         }
     }
-    lettertab[0][pr1]++; //indique que "pr1" est la dernière lettre du mot
+    lettertab[0][pr1][pr2]++; //indique que "pr2-pr1" sont les 2 dernières lettres du mot
     return nb;
 }
 
