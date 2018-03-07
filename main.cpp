@@ -56,16 +56,16 @@ int main()
 
     cout << "Analise terminée\n" << endl;
 
-    if (AFFTAB==1) {
-        cout << "\nPour l'affichage du tableau, aggrandir la fenètre, puis taper une entrée." << endl;
-        int foo;
-        cin >> foo;
-        cout << foo << endl;
-    }
-    if (AFFTAB==1 || AFFTAB==2) {
-        cout << "Affichage du tableau resultant de l'analyse :\nNombre d'occurence totales analysées : " << nbt << endl;
-//        afficheTab2D(lettertab[][][0]);
-    }
+//    if (AFFTAB==1) {
+//        cout << "\nPour l'affichage du tableau, aggrandir la fenètre, puis taper une entrée." << endl;
+//        int foo;
+//        cin >> foo;
+//        cout << foo << endl;
+//    }
+//    if (AFFTAB==1 || AFFTAB==2) {
+//        cout << "Affichage du tableau resultant de l'analyse :\nNombre d'occurence totales analysées : " << nbt << endl;
+////        afficheTab2D(lettertab[][][0]);
+//    }
 
     //Création d'une table des proba cumulative : par ligne (=par lettre précédente), proba d'obtenir une lettre donnée
     //--> Cumulative : proba d'obtenir la lettre 'i' ou une lettre inférieure

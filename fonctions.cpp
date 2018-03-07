@@ -33,12 +33,40 @@ void extractWords(ifstream &liste, vector<string> &mots, vector<float> &proba) {
     return;
 }
 
-int analyzeWord(const string &lemot, int lettertab[27][27][27]) {
+string retireAccent(string message)
+{
+    string accent("ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÌÍÎÏìíîïÙÚÛÜùúûüÿÑñÇç");
+    string sansAccent("AAAAAAaaaaaaOOOOOOooooooEEEEeeeeIIIIiiiiUUUUuuuuyNnCc");
+    int i=0,j=0,k=0,taille;
+
+    taille=message.size();
+
+    for (i=0;i<=taille;i++)
+    {
+        for(j=0;j<=104;j=j+2)
+        {
+            if((message[i]==accent[j])&&(message[i+1]==accent[j+1]))
+            {
+                message[i]=sansAccent[j/2];
+                for(k=i+1;k<taille;k++)
+                {
+                    message[k]=message[k+1];
+                }
+                message=message.substr(0,taille-1);
+                taille=message.size();
+            }
+        }
+    }
+    return message;
+}
+
+int analyzeWord(string &lemot, int lettertab[27][27][27]) {
     int pr1=0; //lettre précédente, intialisée à rien (0)
     int pr2=0; //lettre présente 2 lettre avant, intialisée à rien (0)
     int act; //lettre actuelle
     int nb=0; //nombre total de lettre traitées
     for(unsigned int i=0; i<lemot.size(); i++) {
+        lemot=retireAccent(lemot);
         act=lemot.at(i)-96; // retourne le code ascii de la lettre, puis ramené à a=1
         if(act>0 && act <27) { //on ignore tout caractère accentué
             lettertab[act][pr1][pr2]++;
