@@ -55,7 +55,7 @@ int main()
     }
 
     cout << "Analise terminée\n" << endl;
-/*
+
     if (AFFTAB==1) {
         cout << "\nPour l'affichage du tableau, aggrandir la fenètre, puis taper une entrée." << endl;
         int foo;
@@ -70,24 +70,26 @@ int main()
     //Création d'une table des proba cumulative : par ligne (=par lettre précédente), proba d'obtenir une lettre donnée
     //--> Cumulative : proba d'obtenir la lettre 'i' ou une lettre inférieure
     double probatab[27][27][27];
-    for (int j=0;j<27;j++) {
-        int nbtlsuiv = 0; //nb tot de lettre suivant la lettre 'j'
-        for (int i=0;i<27;i++) {
-            nbtlsuiv += lettertab[i][j];
+    for (uint k=0; k<27; k++) {
+        for (uint j=0;j<27;j++) {
+            int nbtlsuiv = 0; //nb tot de lettre suivant l'enchainement 'k-j'
+            for (uint i=0;i<27;i++) {
+                nbtlsuiv += lettertab[i][j][k];
+            }
+            for (uint i=0;i<27;i++) {
+                probatab[i][j][k] =  (double)lettertab[i][j][k] / nbtlsuiv;
+                if(i!=0)
+                    probatab[i][j][k] += probatab[i-1][j][k]; //Transformation en proba cumulative
+            }
+    //        cout << (char)(j+96) << " " << nbtlsuiv << endl;
         }
-        for (int i=0;i<27;i++) {
-            probatab[i][j] =  (double)lettertab[i][j] / nbtlsuiv;
-            if(i!=0)
-                probatab[i][j] += probatab[i-1][j]; //Transformation en proba cumulative
-        }
-//        cout << (char)(j+96) << " " << nbtlsuiv << endl;
     }
 
     //Génaration d'un mot aléatoire
     for (int i=0; i<20; i++) {
         cout << generateur(probatab) << endl;
     }
-*/
+
 
     cout << "\nFin du programme" << endl;
     return 0;

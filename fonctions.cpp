@@ -71,21 +71,23 @@ int irand_a_b (int a, int b) {
     return rand()%(b-a) + a;
 }
 
-string generateur (double probatab[27][27], uint maxsize) {
+string generateur (double probatab[27][27][27], uint maxsize) {
 
     string monmot ="";
-    int pr =0; //lettre précédente
+    int pr1=0; //lettre précédente
+    int pr2=0; //avant-dernière lettre
     int pot; //lettre potentielle
 
     do {
         pot=0;
-//        cout << probatab[pot][pr] << "\t";
+//        cout << probatab[pot][pr1][pr2] << "\t";
         double r = (double)rand() / RAND_MAX;
-        while (r > probatab[pot][pr]) {
+        while (r > probatab[pot][pr1][pr2]) {
             pot++;
         }
         monmot += (char)(pot+96);
-        pr=pot;
+        pr2=pr1;
+        pr1=pot;
     } while (pot!=0 && monmot.size()<maxsize); //!\ size=taille en octet=nb carac en ascii seulement
     monmot.pop_back();
 
