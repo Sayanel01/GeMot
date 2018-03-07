@@ -22,6 +22,9 @@ using namespace std;
   AFFTAB = 2 affichage du tableau immédiatement*/
 #define AFFTAB 0
 
+/*Booleen, ajoute la suppression des accents à chaque mot (très long)*/
+#define CLEARACCENT false
+
 int main()
 {
     cout << "Starting Program\n...\n" << endl;
@@ -33,14 +36,14 @@ int main()
 
     vector<string> mots;
     vector<float> proba;
-    ifstream Liste_mots("../Mots_FR.txt", ios::in);
+    ifstream Liste_mots("../Mots_FR_full_sansaccents.txt", ios::in);
     //Produit la liste des mots et leur proba associée
     if(Liste_mots) {
         extractWords(Liste_mots, mots, proba);
         cout << "Liste de mot ouverte\n" << endl;
     }
     else {
-        cerr << "Impossible de lire la liste de mots\n";
+        cerr << "Impossible de lire la liste de mots\n" << endl;
         return 1;
     }
 
@@ -50,10 +53,8 @@ int main()
     int lettertab[27][27][27] = {0}; //--> lettertab[2][1][3] = nombre d'occurence de "cab" ("3","1","2")
     int nbt=0; //nombre total de lettres traités
     for(unsigned int i=0; i<mots.size(); i++) {
-//        cout << i << "   ...   "<< mots[i] << endl;
-        nbt += analyzeWord(mots[i], lettertab);
+        nbt += analyzeWord(mots[i], lettertab, CLEARACCENT);
     }
-
     cout << "Analise terminée\n" << endl;
 
 //    if (AFFTAB==1) {
@@ -67,7 +68,8 @@ int main()
 ////        afficheTab2D(lettertab[][][0]);
 //    }
 
-    //Création d'une table des proba cumulative : par ligne (=par lettre précédente), proba d'obtenir une lettre donnée
+    cout << "Analyse du tableau d'analyse..." << endl;
+    //Création d'une table des proba cumulative : par ligne (=par doublon précédent), proba d'obtenir une lettre donnée
     //--> Cumulative : proba d'obtenir la lettre 'i' ou une lettre inférieure
     double probatab[27][27][27];
     for (uint k=0; k<27; k++) {
@@ -81,13 +83,16 @@ int main()
                 if(i!=0)
                     probatab[i][j][k] += probatab[i-1][j][k]; //Transformation en proba cumulative
             }
-    //        cout << (char)(j+96) << " " << nbtlsuiv << endl;
         }
     }
 
+    cout << "Tableau des probabilité terminé\n" << endl;
+
+    uint nb = 20;
+    cout << "Génération de " << nb << " mots :" << endl;
     //Génaration d'un mot aléatoire
-    for (int i=0; i<20; i++) {
-        cout << generateur(probatab) << endl;
+    for (uint i=0; i<nb; i++) {
+        cout << " " <<generateur(probatab) << endl;
     }
 
 

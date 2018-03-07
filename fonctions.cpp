@@ -27,7 +27,10 @@ void extractWords(ifstream &liste, vector<string> &mots, vector<float> &proba) {
         stringstream ss;
         ss << line;
         ss >> mots[i] >> sproba; //divise la ligne en deux (mot / proba du mot)
-        proba[i]=std::stof(sproba); //converti la proba en float
+        if(sproba!="") //si la liste ne comprend pas de fréquence, sproba sera une chaine vide
+            proba[i]=std::stof(sproba); //converti la proba en float
+        else
+            proba[i]=0;
     }
     liste.close();
     return;
@@ -60,13 +63,14 @@ string retireAccent(string message)
     return message;
 }
 
-int analyzeWord(string &lemot, int lettertab[27][27][27]) {
+int analyzeWord(string &lemot, int lettertab[27][27][27], bool ClearAccent) {
     int pr1=0; //lettre précédente, intialisée à rien (0)
     int pr2=0; //lettre présente 2 lettre avant, intialisée à rien (0)
     int act; //lettre actuelle
     int nb=0; //nombre total de lettre traitées
     for(unsigned int i=0; i<lemot.size(); i++) {
-        lemot=retireAccent(lemot);
+        if(ClearAccent==true)
+            lemot=retireAccent(lemot);
         act=lemot.at(i)-96; // retourne le code ascii de la lettre, puis ramené à a=1
         if(act>0 && act <27) { //on ignore tout caractère accentué
             lettertab[act][pr1][pr2]++;

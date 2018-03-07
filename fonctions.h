@@ -9,7 +9,7 @@
 
 void extractWords(std::ifstream &liste, std::vector<std::string> &mots, std::vector<float> &proba);
 std::string retireAccent(std::string message);
-int analyzeWord(std::string &lemot, int lettertab[27][27][27]);
+int analyzeWord(std::string &lemot, int lettertab[27][27][27], bool ClearAccent=false);
 void afficheTab2D(int tab[27][27], int laff=27, int caff=27);
 int irand_a_b(int a, int b);
 std::string generateur(double probatab[27][27][27], uint maxsize=100);
