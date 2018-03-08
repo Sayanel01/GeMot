@@ -9,3 +9,5 @@ SOURCES += main.cpp \
 HEADERS += \
     fonctions.h
 
+DISTFILES +=
+

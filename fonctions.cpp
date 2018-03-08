@@ -41,18 +41,12 @@ string retireAccent(string message)
     string accent("ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÌÍÎÏìíîïÙÚÛÜùúûüÿÑñÇç");
     string sansAccent("AAAAAAaaaaaaOOOOOOooooooEEEEeeeeIIIIiiiiUUUUuuuuyNnCc");
     int i=0,j=0,k=0,taille;
-
     taille=message.size();
-
-    for (i=0;i<=taille;i++)
-    {
-        for(j=0;j<=104;j=j+2)
-        {
-            if((message[i]==accent[j])&&(message[i+1]==accent[j+1]))
-            {
+    for (i=0;i<=taille;i++) {
+        for(j=0;j<=104;j=j+2) {
+            if((message[i]==accent[j])&&(message[i+1]==accent[j+1])) {
                 message[i]=sansAccent[j/2];
-                for(k=i+1;k<taille;k++)
-                {
+                for(k=i+1;k<taille;k++) {
                     message[k]=message[k+1];
                 }
                 message=message.substr(0,taille-1);
@@ -104,7 +98,6 @@ int irand_a_b (int a, int b) {
 }
 
 string generateur (double probatab[27][27][27], uint maxsize) {
-
     string monmot ="";
     int pr1=0; //lettre précédente
     int pr2=0; //avant-dernière lettre

@@ -22,21 +22,32 @@ using namespace std;
   AFFTAB = 2 affichage du tableau immédiatement*/
 #define AFFTAB 0
 
-/*Booleen, ajoute la suppression des accents à chaque mot (très long)*/
-#define CLEARACCENT false
-
 int main()
 {
+    //Paramètres du programme :
+    string nom_liste_def = "../Mots_FR_full_sansaccents.txt"; //liste de mot par défaut
+    bool clearaccent = false; //traitement des accent par remplacement
+    uint taillemax = 100; //taille maximal des mots
+    uint nb = 20; //nombre de mots à générer
+
     cout << "Starting Program\n...\n" << endl;
 
     //Initialisation du générateur aléatoire
     srand(time(NULL));
 
+    //Choix de la liste de mot
+    cout << "Veuillez indiquer le chemin de la liste de mot" << endl;
+    cout << "     (defaut : '" << nom_liste_def << "')" << endl;
+    string nom_liste;
+    getline(cin,nom_liste);
+    if (nom_liste.size() == 0)
+        nom_liste=nom_liste_def;
+
     cout << "Importation de la liste de mots..." << endl;
 
     vector<string> mots;
     vector<float> proba;
-    ifstream Liste_mots("../Mots_FR_full_sansaccents.txt", ios::in);
+    ifstream Liste_mots(nom_liste_def, ios::in);
     //Produit la liste des mots et leur proba associée
     if(Liste_mots) {
         extractWords(Liste_mots, mots, proba);
@@ -53,7 +64,7 @@ int main()
     int lettertab[27][27][27] = {0}; //--> lettertab[2][1][3] = nombre d'occurence de "cab" ("3","1","2")
     int nbt=0; //nombre total de lettres traités
     for(unsigned int i=0; i<mots.size(); i++) {
-        nbt += analyzeWord(mots[i], lettertab, CLEARACCENT);
+        nbt += analyzeWord(mots[i], lettertab, clearaccent);
     }
     cout << "Analise terminée\n" << endl;
 
@@ -88,11 +99,11 @@ int main()
 
     cout << "Tableau des probabilité terminé\n" << endl;
 
-    uint nb = 20;
+
     cout << "Génération de " << nb << " mots :" << endl;
     //Génaration d'un mot aléatoire
     for (uint i=0; i<nb; i++) {
-        cout << " " <<generateur(probatab) << endl;
+        cout << " " <<generateur(probatab, taillemax) << endl;
     }
 
 
