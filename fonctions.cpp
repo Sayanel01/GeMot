@@ -36,7 +36,7 @@ void extractWords(ifstream &liste, vector<string> &mots, vector<float> &proba) {
     return;
 }
 
-string retireAccent(string message)
+string retireAccent(string &message)
 {
     string accent("ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÌÍÎÏìíîïÙÚÛÜùúûüÿÑñÇç");
     string sansAccent("AAAAAAaaaaaaOOOOOOooooooEEEEeeeeIIIIiiiiUUUUuuuuyNnCc");

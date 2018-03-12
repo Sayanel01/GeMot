@@ -30,13 +30,13 @@ int main()
     uint taillemax = 100; //taille maximal des mots
     uint nb = 20; //nombre de mots à générer
 
-    cout << "Starting Program\n...\n" << endl;
+    cout << "Invente-moi un moupthomb\n...\n" << endl;
 
     //Initialisation du générateur aléatoire
     srand(time(NULL));
 
     //Choix de la liste de mot
-    cout << "Veuillez indiquer le chemin de la liste de mot" << endl;
+    cout << "Indiquer le chemin de la liste de mot" << endl;
     cout << "     (defaut : '" << nom_liste_def << "')" << endl;
     string nom_liste;
     getline(cin,nom_liste);
