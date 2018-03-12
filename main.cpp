@@ -5,6 +5,12 @@
  * Par Philémon Giraud - 2018
  */
 
+#include <QApplication>
+#include <QtWidgets>
+#include "mainwindow.h"
+#include "fonctions.h"
+
+/*
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -12,7 +18,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <time.h>
-#include "fonctions.h"
+*/
 
 using namespace std;
 
@@ -22,7 +28,25 @@ using namespace std;
   AFFTAB = 2 affichage du tableau immédiatement*/
 #define AFFTAB 0
 
-int main()
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+
+    /*Traduction des texte automatique en fr*/
+    QString locale = QLocale::system().name().section('_', 0, 0);
+    QTranslator translator;
+    translator.load(QString("qt_") + locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&translator);
+    /*fin*/
+
+    MainWindow fenetre;
+    fenetre.show();
+
+    return app.exec();
+
+}
+
+/*int main()
 {
     //Paramètres du programme :
     string nom_liste_def = "../Mots_FR_full_sansaccents.txt"; //liste de mot par défaut
@@ -109,5 +133,5 @@ int main()
 
     cout << "\nFin du programme" << endl;
     return 0;
-}
+}*/
 
