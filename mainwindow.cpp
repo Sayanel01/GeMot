@@ -78,15 +78,20 @@ void MainWindow::on_bouton_LancerAnalyse_clicked() {
         }
     }
     ui->progr_Analyse->setValue(avRecup+avAnal+avProbatab-1);
-    ui->label_ResAnalyse->setText("Tableau de probabilité construit. Prêt à inventer des mots !");
+    ui->label_ResAnalyse->setText("Tableau de probabilité construit.\n Prêt à inventer des mots !");
     ui->progr_Analyse->setToolTip("Non, la barre ne va pas à 100%. C'est frustrant, hein ?");
+
     analysed=true;
+    ui->frame_generation->setEnabled(true);
 }
 
 void MainWindow::on_bouton_GenMots_clicked() {
     //TODO : parameter taillemax à placer
+    if (!analysed)
+        return;
     
-    std::string mot(generateur(probatab));
-
-    ui->text_ResMots->setText(QString::fromStdString(mot));
+    for (int i=0; i<ui->spin_NbMots->value(); i++) {
+        std::string mot(generateur(probatab));
+        ui->text_ResMots->append(QString::fromStdString(mot));
+    }
 }

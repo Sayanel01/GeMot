@@ -6,191 +6,203 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>959</width>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label_Analyse">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>181</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Etape 1 : Analyse d'une langue</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_Generation">
-    <property name="geometry">
-     <rect>
-      <x>9</x>
-      <y>324</y>
-      <width>172</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Etape 2 : Génération de mots</string>
-    </property>
-   </widget>
-   <widget class="Line" name="separator">
-    <property name="geometry">
-     <rect>
-      <x>9</x>
-      <y>315</y>
-      <width>782</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>60</y>
-      <width>501</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="1" column="0">
-      <widget class="QRadioButton" name="radio_LanPerso">
-       <property name="text">
-        <string>Choisir une liste de mot</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <widget class="QRadioButton" name="radio_LangDef">
-       <property name="text">
-        <string>Utiliser la langue par défaut (français)</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QPushButton" name="bouton_selecFichier">
-       <property name="text">
-        <string>(Aucun)</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QPushButton" name="bouton_GenMots">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>390</y>
-      <width>121</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Génerer des mots</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>350</y>
-      <width>212</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLabel" name="label_NbMotGen">
-       <property name="text">
-        <string>Nombre de mots à générer</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="spin_NbMots">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QTextEdit" name="text_ResMots">
-    <property name="geometry">
-     <rect>
-      <x>280</x>
-      <y>340</y>
-      <width>311</width>
-      <height>181</height>
-     </rect>
-    </property>
-    <property name="cursor" stdset="0">
-     <cursorShape>ArrowCursor</cursorShape>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QWidget" name="gridLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>220</y>
-      <width>661</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="bouton_LancerAnalyse">
-       <property name="text">
-        <string>Analyser</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QProgressBar" name="progr_Analyse">
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Resultat :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="label_ResAnalyse">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QFrame" name="frame_analyse">
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="layout_analyse">
+         <item row="1" column="0">
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="1">
+            <widget class="QProgressBar" name="progr_Analyse">
+             <property name="value">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Resultat :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="label_ResAnalyse">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="bouton_LancerAnalyse">
+             <property name="text">
+              <string>Analyser</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="2" column="1" colspan="2">
+            <widget class="QPushButton" name="bouton_selecFichier">
+             <property name="text">
+              <string>(Aucun)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QRadioButton" name="radio_LanPerso">
+             <property name="text">
+              <string>Choisir une liste de mot</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QRadioButton" name="radio_LangDef">
+             <property name="text">
+              <string>Utiliser la langue par défaut (français)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
+            <widget class="QLabel" name="label_Analyse">
+             <property name="text">
+              <string>Etape 1 : Analyse d'une langue</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="frame_generation">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QGridLayout" name="layout_generation">
+         <item row="3" column="0">
+          <widget class="QPushButton" name="bouton_GenMots">
+           <property name="text">
+            <string>Inventer des mots</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_NbMotGen">
+             <property name="text">
+              <string>Nombre de mots à générer</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spin_NbMots">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>9999</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="4" column="0">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="1" rowspan="4">
+          <widget class="QTextEdit" name="text_ResMots">
+           <property name="cursor" stdset="0">
+            <cursorShape>ArrowCursor</cursorShape>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QLabel" name="label_Generation">
+           <property name="text">
+            <string>Etape 2 : Génération de mots</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>959</width>
      <height>27</height>
     </rect>
    </property>

@@ -107,7 +107,7 @@ string generateur (double probatab[27][27][27], uint maxsize) {
         pot=0;
 //        cout << probatab[pot][pr1][pr2] << "\t";
         double r = (double)rand() / RAND_MAX;
-        while (r > probatab[pot][pr1][pr2]) {
+        while (r > probatab[pot][pr1][pr2] && pot<26) {
             pot++;
         }
         monmot += (char)(pot+96);
