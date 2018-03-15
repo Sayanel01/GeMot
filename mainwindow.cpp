@@ -2,6 +2,9 @@
 #include <string>
 #include <fstream>
 #include <QCoreApplication>
+#include <QFileDialog>
+#include <QFile>
+#include <QFileInfo>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -18,18 +21,15 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_bouton_LancerAnalyse_clicked() {
-    std::string nom_liste;
     ui->progr_Analyse->setValue(0);
     int avRecup(5), avAnal(90), avProbatab(5); //doit sommer a 100. Avancement (%) de chaque étape
 
     //Choix liste mot (selon valeur radio)
     if (ui->radio_LangDef->isChecked()) {
-        nom_liste = "../Mots_FR_full_sansaccents.txt"; //TODO : placer un paramètre string nom_liste_defaut
+        nomListeMots = "../Mots_FR_full_sansaccents.txt"; //TODO : placer un paramètre string nom_liste_defaut
     }
     else if (ui->radio_LanPerso->isChecked()) {
-        //Not implemented yet
-        ui->label_ResAnalyse->setText("Aborted. Not implemented yet");
-        return;
+//        nomListeMots = nomListeMots; //on a déjà ça ><
     }
     else {
         ui->progr_Analyse->setValue(42);
@@ -39,7 +39,7 @@ void MainWindow::on_bouton_LancerAnalyse_clicked() {
     //Importation liste mots
     std::vector<std::string> mots;
     std::vector<float> proba;
-    std::ifstream Liste_mots(nom_liste, std::ios::in);
+    std::ifstream Liste_mots(nomListeMots.toStdString(), std::ios::in);
     if(Liste_mots) {
         extractWords(Liste_mots, mots, proba);
         ui->label_ResAnalyse->setText("Liste de mots récupérée. Analyse en cours...");
@@ -54,8 +54,8 @@ void MainWindow::on_bouton_LancerAnalyse_clicked() {
     int lettertab[27][27][27] = {0}; //--> lettertab[2][1][3] = nombre d'occurence de "cab" ("3","1","2")
     int nbt=0; //nombre total de lettres traités
     for(unsigned int i=0; i<mots.size(); i++) {
-        nbt += analyzeWord(mots[i], lettertab, false); //TODO : placer un paramètre bool clearaccent
-        if (i%100==0) { //Possibilité : 10000 (haché), 100000 (3 étapes) //TODO : choix de la précision ici ?
+        nbt += analyzeWord(mots[i], lettertab, ui->check_accent->isChecked());
+        if (i%100==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
             ui->progr_Analyse->setValue(avRecup+i/(float)mots.size()*avAnal);
             QCoreApplication::processEvents(); //permet l'actualisation du gui. Ralenti les calcul...
         }
@@ -86,12 +86,29 @@ void MainWindow::on_bouton_LancerAnalyse_clicked() {
 }
 
 void MainWindow::on_bouton_GenMots_clicked() {
-    //TODO : parameter taillemax à placer
     if (!analysed)
         return;
-    
+    uint taille_max = ui->spin_tailleMax->value();
+
+    if(taille_max==0)
+        taille_max=100;
+
     for (int i=0; i<ui->spin_NbMots->value(); i++) {
-        std::string mot(generateur(probatab));
+        std::string mot(generateur(probatab, taille_max, ui->check_forceTaille->isChecked()));
         ui->text_ResMots->append(QString::fromStdString(mot));
     }
 }
+
+void MainWindow::on_bouton_clear_clicked() {
+    ui->text_ResMots->clear();
+}
+
+void MainWindow::on_bouton_selecFichier_clicked() {
+    nomListeMots = QFileDialog::getOpenFileName(this, "Selectionner une liste de mot .txt", "", "Fichier texte (*.txt)");
+    QFile file(nomListeMots);
+    QFileInfo fileinfo(file);
+    ui->bouton_selecFichier->setText(fileinfo.fileName());
+
+    ui->radio_LanPerso->setChecked(true);
+}
+

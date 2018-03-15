@@ -56,6 +56,30 @@
              </property>
             </widget>
            </item>
+           <item row="2" column="1">
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="4" column="0">
+            <widget class="QCheckBox" name="check_accent">
+             <property name="toolTip">
+              <string>Convertit les &quot;é&quot; en &quot;e&quot;, au lieu de faire comme s'il n'existait pas.
+ C'est mal fait donc très long, et ça sert à rien sur les listes de mots sans accents</string>
+             </property>
+             <property name="text">
+              <string>Gestion des accents</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
          <item row="0" column="0">
@@ -74,16 +98,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QRadioButton" name="radio_LangDef">
-             <property name="text">
-              <string>Utiliser la langue par défaut (français)</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0" colspan="3">
             <widget class="QLabel" name="label_Analyse">
              <property name="text">
@@ -91,31 +105,21 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="0" colspan="3">
+            <widget class="QRadioButton" name="radio_LangDef">
+             <property name="text">
+              <string>Utiliser la langue par défaut (français sans accent)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
        </item>
-       <item row="1" column="0">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
      </widget>
     </item>
     <item>
@@ -132,14 +136,67 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <layout class="QGridLayout" name="layout_generation">
-         <item row="3" column="0">
-          <widget class="QPushButton" name="bouton_GenMots">
-           <property name="text">
-            <string>Inventer des mots</string>
+         <item row="4" column="1">
+          <widget class="QSpinBox" name="spin_tailleMax">
+           <property name="suffix">
+            <string> lettres</string>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="singleStep">
+            <number>2</number>
+           </property>
+           <property name="value">
+            <number>20</number>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="7" column="1">
+          <widget class="QPushButton" name="bouton_clear">
+           <property name="text">
+            <string>Nettoyer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="2">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0" colspan="3">
+          <widget class="QLabel" name="label_Generation">
+           <property name="text">
+            <string>Etape 2 : Génération de mots</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Taille max des mots</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2" rowspan="6">
+          <widget class="QTextEdit" name="text_ResMots">
+           <property name="cursor" stdset="0">
+            <cursorShape>ArrowCursor</cursorShape>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
             <widget class="QLabel" name="label_NbMotGen">
@@ -160,33 +217,17 @@
            </item>
           </layout>
          </item>
-         <item row="4" column="0">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="2" column="1" rowspan="4">
-          <widget class="QTextEdit" name="text_ResMots">
-           <property name="cursor" stdset="0">
-            <cursorShape>ArrowCursor</cursorShape>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
+         <item row="3" column="0" colspan="2">
+          <widget class="QPushButton" name="bouton_GenMots">
+           <property name="text">
+            <string>Inventer des mots</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0" colspan="2">
-          <widget class="QLabel" name="label_Generation">
+         <item row="5" column="0" colspan="2">
+          <widget class="QCheckBox" name="check_forceTaille">
            <property name="text">
-            <string>Etape 2 : Génération de mots</string>
+            <string>Forcer la taille des mots</string>
            </property>
           </widget>
          </item>

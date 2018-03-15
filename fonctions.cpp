@@ -97,7 +97,7 @@ int irand_a_b (int a, int b) {
     return rand()%(b-a) + a;
 }
 
-string generateur (double probatab[27][27][27], uint maxsize) {
+string generateur (double probatab[27][27][27], uint maxsize, bool forcedSize) {
     string monmot ="";
     int pr1=0; //lettre précédente
     int pr2=0; //avant-dernière lettre
@@ -110,11 +110,12 @@ string generateur (double probatab[27][27][27], uint maxsize) {
         while (r > probatab[pot][pr1][pr2] && pot<26) {
             pot++;
         }
-        monmot += (char)(pot+96);
-        pr2=pr1;
-        pr1=pot;
-    } while (pot!=0 && monmot.size()<maxsize); //!\ size=taille en octet=nb carac en ascii seulement
-    monmot.pop_back();
+        if (pot!=0){ //si pot=0 (eg. fin du mot) MAIS forcedSize, alors on ignore ce caractère
+            monmot += (char)(pot+96);
+            pr2=pr1;
+            pr1=pot;
+        }
+    } while ((pot!=0 || forcedSize) && monmot.size()<maxsize+1); //!\ size=taille en octet=nb carac en ascii seulement
 
     return monmot;
 }
