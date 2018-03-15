@@ -63,8 +63,7 @@ void MainWindow::on_bouton_LancerAnalyse_clicked() {
     ui->label_ResAnalyse->setText("Liste de mots analysée. Analyse de l'analyse en cours...");
 //    ui->progr_Analyse->setValue(66);
 
-    //Création du tableau des probas cumulatives
-    double probatab[27][27][27];
+    //Création du tableau des probas cumulatives probatab
     for (uint k=0; k<27; k++) {
         for (uint j=0;j<27;j++) {
             int nbtlsuiv = 0; //nb tot de lettre suivant l'enchainement 'k-j'
@@ -81,10 +80,13 @@ void MainWindow::on_bouton_LancerAnalyse_clicked() {
     ui->progr_Analyse->setValue(avRecup+avAnal+avProbatab-1);
     ui->label_ResAnalyse->setText("Tableau de probabilité construit. Prêt à inventer des mots !");
     ui->progr_Analyse->setToolTip("Non, la barre ne va pas à 100%. C'est frustrant, hein ?");
+    analysed=true;
 }
 
 void MainWindow::on_bouton_GenMots_clicked() {
+    //TODO : parameter taillemax à placer
     
-    
-    ui->text_ResMots->setText("hgd");
+    std::string mot(generateur(probatab));
+
+    ui->text_ResMots->setText(QString::fromStdString(mot));
 }

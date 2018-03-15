@@ -22,7 +22,8 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    double proba
+    double probatab[27][27][27] = {{{0}}};
+    bool analysed = false;
 };
 
 #endif // MAINWINDOW_H
