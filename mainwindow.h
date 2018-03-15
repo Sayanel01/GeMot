@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "fonctions.h"
 
 namespace Ui {
 class MainWindow;
@@ -15,8 +16,13 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void on_bouton_LancerAnalyse_clicked();
+    void on_bouton_GenMots_clicked();
+
 private:
     Ui::MainWindow *ui;
+    double proba
 };
 
 #endif // MAINWINDOW_H

@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 
     vector<string> mots;
     vector<float> proba;
-    ifstream Liste_mots(nom_liste_def, ios::in);
+    ifstream Liste_mots(nom_liste, ios::in);
     //Produit la liste des mots et leur proba associée
     if(Liste_mots) {
         extractWords(Liste_mots, mots, proba);

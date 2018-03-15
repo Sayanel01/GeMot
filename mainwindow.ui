@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="labelAnanlyse">
+   <widget class="QLabel" name="label_Analyse">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -27,7 +27,7 @@
      <string>Etape 1 : Analyse d'une langue</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelGeneration">
+   <widget class="QLabel" name="label_Generation">
     <property name="geometry">
      <rect>
       <x>9</x>
@@ -40,7 +40,7 @@
      <string>Etape 2 : Génération de mots</string>
     </property>
    </widget>
-   <widget class="Line" name="line">
+   <widget class="Line" name="separator">
     <property name="geometry">
      <rect>
       <x>9</x>
@@ -64,16 +64,19 @@
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="1" column="0">
-      <widget class="QRadioButton" name="radioButton_2">
+      <widget class="QRadioButton" name="radio_LanPerso">
        <property name="text">
         <string>Choisir une liste de mot</string>
        </property>
       </widget>
      </item>
      <item row="0" column="0" colspan="2">
-      <widget class="QRadioButton" name="radioButton">
+      <widget class="QRadioButton" name="radio_LangDef">
        <property name="text">
         <string>Utiliser la langue par défaut (français)</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -86,27 +89,96 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget">
+   <widget class="QPushButton" name="bouton_GenMots">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>260</y>
-      <width>721</width>
-      <height>41</height>
+      <x>30</x>
+      <y>390</y>
+      <width>121</width>
+      <height>27</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="text">
+     <string>Génerer des mots</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>350</y>
+      <width>212</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="bouton_lancerAnalyse">
+      <widget class="QLabel" name="label_NbMotGen">
+       <property name="text">
+        <string>Nombre de mots à générer</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spin_NbMots">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QTextEdit" name="text_ResMots">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>340</y>
+      <width>311</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="cursor" stdset="0">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>220</y>
+      <width>661</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="bouton_LancerAnalyse">
        <property name="text">
         <string>Analyser</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="1">
       <widget class="QProgressBar" name="progr_Analyse">
        <property name="value">
-        <number>24</number>
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Resultat :</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="label_ResAnalyse">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>

@@ -120,6 +120,7 @@ string generateur (double probatab[27][27][27], uint maxsize) {
 }
 
 
+
 //std::vector<string> stringsplitter(const string &line, char delim) {
 //    int size = line.size();
 //    int r=0;
