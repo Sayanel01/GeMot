@@ -5,6 +5,8 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QFileInfo>
+#include <thread>
+#include <chrono>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -13,6 +15,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QString ListeMotsInstruction("La liste de mot doit être au format .txt, avec 1 seul mot par ligne\n"
+                                 "Si plusieurs mots par lignes, seul le premier est pris en compte");
+    ui->radio_LanPerso->setToolTip(ListeMotsInstruction);
+    ui->bouton_selecFichier->setToolTip(ui->radio_LanPerso->toolTip());
+
+    connect(ui->action_aide, SIGNAL(triggered()), this, SLOT(openHelp()));
 }
 
 MainWindow::~MainWindow()
@@ -42,7 +51,7 @@ void MainWindow::on_bouton_LancerAnalyse_clicked() {
     std::ifstream Liste_mots(nomListeMots.toStdString(), std::ios::in);
     if(Liste_mots) {
         extractWords(Liste_mots, mots, proba);
-        ui->label_ResAnalyse->setText("Liste de mots récupérée. Analyse en cours...");
+        ui->label_ResAnalyse->setText("Liste de mots récupérée. Analyse...");
         ui->progr_Analyse->setValue(avRecup);
     }
     else {
@@ -88,6 +97,8 @@ void MainWindow::on_bouton_LancerAnalyse_clicked() {
 void MainWindow::on_bouton_GenMots_clicked() {
     if (!analysed)
         return;
+    ui->check_troll->setChecked(false);
+
     uint taille_max = ui->spin_tailleMax->value();
 
     if(taille_max==0)
@@ -112,3 +123,12 @@ void MainWindow::on_bouton_selecFichier_clicked() {
     ui->radio_LanPerso->setChecked(true);
 }
 
+void MainWindow::on_check_troll_clicked() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    ui->check_troll->setChecked(false); //TODO : remplacer par un léger délai avant de dé-check
+}
+
+void MainWindow::openHelp() {
+    m_FenAide = new FenAide();
+    m_FenAide->show();
+}

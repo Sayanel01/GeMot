@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>959</width>
+    <width>968</width>
     <height>350</height>
    </rect>
   </property>
@@ -152,14 +152,14 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="1">
+         <item row="8" column="1">
           <widget class="QPushButton" name="bouton_clear">
            <property name="text">
             <string>Nettoyer</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="0" colspan="2">
+         <item row="7" column="0" colspan="2">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -186,7 +186,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="2" rowspan="6">
+         <item row="2" column="2" rowspan="7">
           <widget class="QTextEdit" name="text_ResMots">
            <property name="cursor" stdset="0">
             <cursorShape>ArrowCursor</cursorShape>
@@ -217,6 +217,16 @@
            </item>
           </layout>
          </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QCheckBox" name="check_forceTaille">
+           <property name="toolTip">
+            <string>Evidemment, avec des mots de 20 lettres, ça marche tout de suite moins bien</string>
+           </property>
+           <property name="text">
+            <string>Forcer la taille des mots</string>
+           </property>
+          </widget>
+         </item>
          <item row="3" column="0" colspan="2">
           <widget class="QPushButton" name="bouton_GenMots">
            <property name="text">
@@ -224,10 +234,10 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0" colspan="2">
-          <widget class="QCheckBox" name="check_forceTaille">
+         <item row="6" column="0" colspan="2">
+          <widget class="QCheckBox" name="check_troll">
            <property name="text">
-            <string>Forcer la taille des mots</string>
+            <string>Génération réaliste utf8</string>
            </property>
           </widget>
          </item>
@@ -243,12 +253,24 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>959</width>
+     <width>968</width>
      <height>27</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuAide">
+    <property name="title">
+     <string>Aide</string>
+    </property>
+    <addaction name="action_aide"/>
+   </widget>
+   <addaction name="menuAide"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_aide">
+   <property name="text">
+    <string>Comment ça marche</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
