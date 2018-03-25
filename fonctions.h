@@ -5,16 +5,18 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <map>
+#include <QString>
 
 void extractWords(std::ifstream &liste, std::vector<std::string> &mots, std::vector<float> &proba);
-std::string retireAccent(std::string &message);
+
 int analyzeWord(std::string &lemot, int lettertab[27][27][27], bool ClearAccent=false);
-void afficheTab2D(int tab[27][27], int laff=27, int caff=27);
-int irand_a_b(int a, int b);
+void QanalyzeWord(const QString &lemot, std::map<std::vector<QChar>, std::pair<int,double>> &charmap, uint lcoh, int &nb);
+
 std::string generateur(double probatab[27][27][27], uint maxsize=100, bool forcedSize=false);
+std::string Qgenerateur(std::map<std::vector<QChar>, std::pair<int,double>> &charmap, uint lcoh, uint maxsize, bool forcedSize);
 
+std::string retireAccent(std::string &message);
 
-
-//std::vector<string> stringsplitter(const string &line, char delim = 9);
 
 #endif // FONCTIONS

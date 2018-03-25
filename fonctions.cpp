@@ -77,24 +77,24 @@ int analyzeWord(string &lemot, int lettertab[27][27][27], bool ClearAccent) {
     return nb;
 }
 
-void afficheTab2D(int tab[27][27], int laff, int caff) {
-    cout << "\t";
-    for (int i=0; i<caff; i++){ //met l'en tête
-        cout << i << " "<< (char)(i+96) << "\t";
-    }
-    cout << endl;
-    for (int j=0; j<laff; j++) {
-        cout << j << " " << (char)(j+96) <<  ":\t";
-        for (int i=0; i<caff; i++) {
-            cout << "[" << tab[i][j] << "]\t";
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
+void QanalyzeWord(const QString &lemot, map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, int &nb) {
+    //suiteLettres[size-1]=act;
+    //suiteLettres[size-2]=pr1;
+    vector<QChar> suiteLettres(lcoh,'\0'); //vecteur de longueur lcoh, initialisé à \0
 
-int irand_a_b (int a, int b) {
-    return rand()%(b-a) + a;
+    for(int i=0; i<lemot.size(); i++) {
+        suiteLettres[lcoh-1]=lemot.at(i); //lcoh = suiteLettres.size()
+        charmap[suiteLettres].first++;
+        nb++;
+        for(uint j=0; j<lcoh-1; j++) {
+            suiteLettres[j]=suiteLettres[j+1];
+        }
+    }
+    //Indication de dernier charactère=vide
+    suiteLettres[lcoh-1]='\0'; //TODO : whatdafuck?? c'est quoi c'est trucs chinois ?
+    charmap[suiteLettres].first++;
+
+    return;
 }
 
 string generateur (double probatab[27][27][27], uint maxsize, bool forcedSize) {
@@ -105,7 +105,6 @@ string generateur (double probatab[27][27][27], uint maxsize, bool forcedSize) {
 
     do {
         pot=0;
-//        cout << probatab[pot][pr1][pr2] << "\t";
         double r = (double)rand() / RAND_MAX;
         while (r > probatab[pot][pr1][pr2] && pot<26) {
             pot++;
@@ -120,18 +119,34 @@ string generateur (double probatab[27][27][27], uint maxsize, bool forcedSize) {
     return monmot;
 }
 
+string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, uint maxsize, bool forcedSize) {
+    string monmot="";
+    vector<QChar> cePr(lcoh-1,'\0');
 
+    vector<QChar> cePrMin, cePrMax; //debut et fin des élément de la map ayant ce Pr
+    cePrMin.reserve(lcoh); cePrMax.reserve(lcoh);
+    map<vector<QChar>, pair<int,double>>::iterator it, itLow, itHigh;
+    //itLow : itérateur vers le premier éléments de la map ayant ce Pr
+    //itHigh: itérateur vers l'élément suivant le dernier éléments de la map ayant ce Pr
 
-//std::vector<string> stringsplitter(const string &line, char delim) {
-//    int size = line.size();
-//    int r=0;
-//    vector<string> v;
-//    for(int i=0; i<size; i++) {
-//        if (line[i]==delim) {
-//            v.push_back(line.substr(r, i-r));
-//            r=i+1;
-//        }
-//    }
-//    v.push_back(line.substr(r, size-r));
-//    return v;
-//}
+    do {
+        cePrMin=cePr;   cePrMin.push_back(QChar::Null);
+        cePrMax=cePr;   cePrMax.push_back(QChar::LastValidCodePoint);
+
+        itLow = charmap.lower_bound(cePrMin);
+        itHigh = charmap.upper_bound(cePrMax);
+        it = itLow;
+
+        double r = (double)rand() / RAND_MAX;
+        while (r >= it->second.second && it != itHigh) {
+            it++;
+        }
+        monmot += QString(it->first.back()).toStdString();
+        for(uint i=0; i<cePr.size()-1; i++) {
+            cePr[i] = cePr[i+1];
+        }
+        cePr[cePr.size()-1] = it->first.back();
+    } while (it->first.back() != '\0' && monmot.size() <= maxsize);
+
+    return monmot;
+}
