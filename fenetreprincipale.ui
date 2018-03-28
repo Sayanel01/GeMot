@@ -22,9 +22,6 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>1</number>
-      </property>
       <widget class="QWidget" name="onglet_analyse">
        <attribute name="title">
         <string>Analyse d'une liste de mots</string>
@@ -392,7 +389,7 @@
          </widget>
         </item>
         <item row="3" column="0" colspan="2">
-         <widget class="QCheckBox" name="check_forcer">
+         <widget class="QCheckBox" name="check_forcerTaille">
           <property name="layoutDirection">
            <enum>Qt::RightToLeft</enum>
           </property>
@@ -406,13 +403,23 @@
           <property name="suffix">
            <string> lettres</string>
           </property>
+          <property name="singleStep">
+           <number>2</number>
+          </property>
+          <property name="value">
+           <number>20</number>
+          </property>
          </widget>
         </item>
         <item row="0" column="3" rowspan="9">
          <widget class="QTextEdit" name="text_mots"/>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="spin_nbMots"/>
+         <widget class="QSpinBox" name="spin_nbMots">
+          <property name="value">
+           <number>1</number>
+          </property>
+         </widget>
         </item>
         <item row="4" column="0" colspan="2">
          <widget class="QCheckBox" name="check_troll">

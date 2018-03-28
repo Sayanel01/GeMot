@@ -1,3 +1,7 @@
+#include <QFileDialog>
+#include <QProgressBar>
+#include <QTimer>
+#include <thread>
 #include "fenetreprincipale.h"
 #include "ui_fenetreprincipale.h"
 
@@ -12,6 +16,12 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     ui->radio_langPerso->setToolTip(ListeMotsInstruction);
     ui->bouton_selecFichier->setToolTip(ui->radio_langPerso->toolTip());
 
+    //Ajoute les éléments de la statusbar
+    progr_Analyse = new QProgressBar(this);
+    ui->statusbar->addWidget(progr_Analyse);
+//    ui->statusbar->addPermanentWidget(progr_Analyse); TODO : à faire mieux
+
+    //Efface tous les éléments affiché par le bouton "détail"
     ui->Bof->setVisible(false);
     ui->Bof_2->setVisible(false);
     ui->Minable->setVisible(false);
@@ -21,7 +31,6 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     ui->Qualite->setVisible(false);
     ui->Rapidite->setVisible(false);
     ui->line_details->setVisible(false);
-
 }
 
 FenetrePrincipale::~FenetrePrincipale()
@@ -30,19 +39,19 @@ FenetrePrincipale::~FenetrePrincipale()
 }
 
 void FenetrePrincipale::on_bouton_analyser_clicked() {
-    ui->progr_Analyse->setValue(0);
+    progr_Analyse->setValue(0);
     int avRecup(5), avAnal(90), avProbatab(5); //doit sommer a 100. Avancement (%) de chaque étape
 
     //Choix liste mot (selon valeur radio)
-    if (ui->radio_LangDef->isChecked()) {
+    if (ui->radio_langDef->isChecked()) {
         nomListeMots = "../Mots_FR_avec_frequence.txt"; //TODO : placer un paramètre string nom_liste_defaut
     }
-    else if (ui->radio_LanPerso->isChecked()) {
+    else if (ui->radio_langPerso->isChecked()) {
 //        nomListeMots = nomListeMots; //on a déjà ça ><
     }
     else {
-        ui->progr_Analyse->setValue(42);
-        ui->label_ResAnalyse->setText("How did you do that ?");
+        progr_Analyse->setValue(42);
+//        ui->label_ResAnalyse->setText("How did you do that ?");
         return; //Si aucun bouton coché : arrêter tout
     }
     //Importation liste mots
@@ -51,11 +60,11 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     std::ifstream Liste_mots(nomListeMots.toStdString(), std::ios::in);
     if(Liste_mots) {
         extractWords(Liste_mots, mots, proba);
-        ui->label_ResAnalyse->setText("Liste de mots récupérée. Analyse...");
-        ui->progr_Analyse->setValue(avRecup);
+//        ui->label_ResAnalyse->setText("Liste de mots récupérée. Analyse...");
+        progr_Analyse->setValue(avRecup);
     }
     else {
-        ui->label_ResAnalyse->setText("Impossible de lire la liste de mots. ");
+//        ui->label_ResAnalyse->setText("Impossible de lire la liste de mots. ");
         return;
     }
 
@@ -66,7 +75,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
         QString qmot=QString::fromStdString(mots[i]);
         QanalyzeWord(qmot,charmap, lcoh, nb);
         if (i%100==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
-            ui->progr_Analyse->setValue(avRecup+i/(float)mots.size()*avAnal);
+            progr_Analyse->setValue(avRecup+i/(float)mots.size()*avAnal);
             QCoreApplication::processEvents(); //permet l'actualisation du gui. Ralenti les calcul...
         }
     }
@@ -82,7 +91,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
         }
     }*/
 
-    ui->label_ResAnalyse->setText("Liste de mots analysée. Analyse de l'analyse en cours...");
+//    ui->label_ResAnalyse->setText("Liste de mots analysée. Analyse de l'analyse en cours...");
 
     //Création du tableau des probas cumulatives probatab
     std::map<std::vector<QChar>, std::pair<int,double>>::iterator it = charmap.begin() , cePrDebut , cePrFin;
@@ -128,12 +137,13 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
             }
         }
     }*/
-    ui->progr_Analyse->setValue(avRecup+avAnal+avProbatab-1);
-    ui->label_ResAnalyse->setText("Tableau de probabilité construit.\n Prêt à inventer des mots !");
-    ui->progr_Analyse->setToolTip("Non, la barre ne va pas à 100%. C'est frustrant, hein ?");
+    progr_Analyse->setValue(avRecup+avAnal+avProbatab-1);
+//    ui->label_ResAnalyse->setText("Tableau de probabilité construit.\n Prêt à inventer des mots !");
+    progr_Analyse->setToolTip("Non, la barre ne va pas à 100%. C'est frustrant, hein ?");
 
     analysed=true;
-    ui->frame_generation->setEnabled(true);
+    ui->tabWidget->setCurrentIndex(1);
+//    ui->frame_generation->setEnabled(true);
 }
 
 void FenetrePrincipale::on_bouton_generer_clicked() {
@@ -146,9 +156,9 @@ void FenetrePrincipale::on_bouton_generer_clicked() {
     if(taille_max==0)
         taille_max=100;
 
-    for (int i=0; i<ui->spin_NbMots->value(); i++) {
-        std::string mot(Qgenerateur(charmap,ui->spin_lcoh->value(),taille_max, ui->check_forceTaille->isChecked()));
-        ui->text_ResMots->append(QString::fromStdString(mot));
+    for (int i=0; i<ui->spin_nbMots->value(); i++) {
+        std::string mot(Qgenerateur(charmap,ui->spin_lcoh->value(),taille_max, ui->check_forcerTaille->isChecked()));
+        ui->text_mots->append(QString::fromStdString(mot));
     }
     //TODO : obliger la réanalyse si on change lcoh
     //et --> prendre la fin de lcoh, pas le début ? permet de réduire lcoh pour la generation
@@ -171,18 +181,6 @@ void FenetrePrincipale::on_bouton_selecFichier_clicked() {
         ui->bouton_selecFichier->setText("(Aucun)");
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 void FenetrePrincipale::on_bouton_details_clicked() {
     ui->Bof->setVisible(!ui->Bof->isVisible());
     ui->Bof_2->setVisible(!ui->Bof_2->isVisible());
@@ -193,4 +191,26 @@ void FenetrePrincipale::on_bouton_details_clicked() {
     ui->Qualite->setVisible(!ui->Qualite->isVisible());
     ui->Rapidite->setVisible(!ui->Rapidite->isVisible());
     ui->line_details->setVisible(!ui->line_details->isVisible());
+}
+
+void FenetrePrincipale::on_bouton_nettoyer_clicked() {
+    ui->text_mots->clear();
+}
+
+void FenetrePrincipale::on_bouton_trier_clicked() {
+    //TODO : immplémenter le tri par taille des mots
+}
+
+void FenetrePrincipale::openHelp() {
+    m_FenAide = new FenAide();
+    m_FenAide->show();
+}
+
+void FenetrePrincipale::on_check_troll_clicked() {
+    QTimer::singleShot(80, this, SLOT(unchecking()));
+}
+
+void FenetrePrincipale::unchecking() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(400));
+    ui->check_troll->setChecked(false);
 }

@@ -12,12 +12,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-//TODO : repenser l'UI pour genmot ancien/nouveau + aide
-//+ menu seuelement->changer nom liste par defaut
-//Peut être :  Analyse / Génération -> toujours 1 des deux est grisé
-//              truc évident pour refaire analyse (sans trop de message attention au moment des dégrisée analyse...) ?
-//Analyse : 2 onglets ? juste checkbox ?
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)

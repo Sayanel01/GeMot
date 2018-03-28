@@ -2,8 +2,9 @@
 #define FENETREPRINCIPALE_H
 
 #include <QMainWindow>
-#include "fenaide.h"
+#include <QProgressBar>
 #include "fonctions.h"
+#include "fenaide.h"
 
 namespace Ui {
 class FenetrePrincipale;
@@ -36,12 +37,14 @@ private:
     Ui::FenetrePrincipale *ui;
 
     QString nomListeMots;
-    double probatab[27][27][27] = {{{0}}};
-    std::map<std::vector<QChar>, std::pair<int,double>> charmap;
+    double probatab[27][27][27] = {{{0}}}; //pour methode nulle
+    std::map<std::vector<QChar>, std::pair<int,double>> charmap; //pour methode un peu mieux
 
     bool analysed = false;
 
     FenAide *m_FenAide;
+
+    QProgressBar *progr_Analyse;
 };
 
 #endif // FENETREPRINCIPALE_H
