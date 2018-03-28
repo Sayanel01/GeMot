@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QtWidgets>
 #include "mainwindow.h"
+#include "fenetreprincipale.h"
 #include "fonctions.h"
 
 /*
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
     app.installTranslator(&translator);
     /*fin*/
 
-    MainWindow fenetre;
+    FenetrePrincipale fenetre;
     fenetre.show();
 
     return app.exec();

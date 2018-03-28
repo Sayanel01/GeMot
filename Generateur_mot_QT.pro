@@ -7,16 +7,19 @@ QT += widgets
 SOURCES += main.cpp \
     fonctions.cpp \
     mainwindow.cpp \
-    fenaide.cpp
+    fenaide.cpp \
+    fenetreprincipale.cpp
 
 HEADERS += \
     fonctions.h \
     mainwindow.h \
-    fenaide.h
+    fenaide.h \
+    fenetreprincipale.h
 
 DISTFILES +=
 
 FORMS += \
     mainwindow.ui \
-    fenaide.ui
+    fenaide.ui \
+    fenetreprincipale.ui
 
