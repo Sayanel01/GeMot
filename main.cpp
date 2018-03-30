@@ -5,9 +5,7 @@
  * Par Philémon Giraud - 2018
  */
 
-#include <QApplication>
 #include <QtWidgets>
-#include "mainwindow.h"
 #include "fenetreprincipale.h"
 #include "fonctions.h"
 

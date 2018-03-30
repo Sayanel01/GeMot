@@ -28,23 +28,27 @@ public slots:
     void on_bouton_nettoyer_clicked();
     void on_bouton_trier_clicked();
 
-    void openHelp();
+    void on_actionAide_triggered();
 
     void on_check_troll_clicked();
     void unchecking();
+
+private slots:
+    void on_spin_lcoh_valueChanged(int value);
 
 private:
     Ui::FenetrePrincipale *ui;
 
     QString nomListeMots;
+    QString nomListeMotsDefaut="WordLists/Mots_FR_avec_frequence.txt";
     double probatab[27][27][27] = {{{0}}}; //pour methode nulle
     std::map<std::vector<QChar>, std::pair<int,double>> charmap; //pour methode un peu mieux
 
-    bool analysed = false;
+    bool A_analysed = false; //indique que l'analyse à été fait par la méthode A
+    bool B_analysed = false; // --- --- par la méthode B
+    uint lcoh;
 
     FenAide *m_FenAide;
-
-    QProgressBar *progr_Analyse;
 };
 
 #endif // FENETREPRINCIPALE_H

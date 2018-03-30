@@ -20,3 +20,6 @@ FORMS += \
     fenaide.ui \
     fenetreprincipale.ui
 
+RESOURCES += \
+    ressources.qrc
+

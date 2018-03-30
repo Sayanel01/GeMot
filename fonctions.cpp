@@ -1,9 +1,9 @@
-#include "fonctions.h"
 #include <vector>
-#include <string>
 #include <sstream>
-#include <iostream>
-#include <cstdlib>
+//#include <string>
+//#include <iostream>
+//#include <cstdlib>
+#include "fonctions.h"
 
 using namespace std;
 
@@ -114,13 +114,13 @@ string generateur (double probatab[27][27][27], uint maxsize, bool forcedSize) {
             pr2=pr1;
             pr1=pot;
         }
-    } while ((pot!=0 || forcedSize) && monmot.size()<maxsize+1); //!\ size=taille en octet=nb carac en ascii seulement
+    } while ((pot!=0 || forcedSize) && monmot.size()<=maxsize); //!\ size=taille en octet=nb carac en ascii seulement
 
     return monmot;
 }
 
-string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, uint maxsize, bool forcedSize) {
-    string monmot="";
+string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, bool forcedSize, uint maxsize) {
+    QString monmot="";
     vector<QChar> cePr(lcoh-1,'\0');
 
     vector<QChar> cePrMin, cePrMax; //debut et fin des élément de la map ayant ce Pr
@@ -128,25 +128,37 @@ string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, uin
     map<vector<QChar>, pair<int,double>>::iterator it, itLow, itHigh;
     //itLow : itérateur vers le premier éléments de la map ayant ce Pr
     //itHigh: itérateur vers l'élément suivant le dernier éléments de la map ayant ce Pr
-
+    int compt=0;
     do {
+        compt++;
         cePrMin=cePr;   cePrMin.push_back(QChar::Null);
         cePrMax=cePr;   cePrMax.push_back(QChar::LastValidCodePoint);
 
         itLow = charmap.lower_bound(cePrMin);
         itHigh = charmap.upper_bound(cePrMax);
         it = itLow;
-
         double r = (double)rand() / RAND_MAX;
-        while (r >= it->second.second && it != itHigh) {
+//        qDebug("r : %f", r);
+        while (r > it->second.second && it != itHigh) {
+//            qDebug("lettre %c",it->first.back());
+//            qDebug("proba %f",it->second.second);
             it++;
         }
-        monmot += QString(it->first.back()).toStdString();
-        for(uint i=0; i<cePr.size()-1; i++) {
-            cePr[i] = cePr[i+1];
+        if (it==itHigh || it==prev(itHigh))
+            it=itLow;
+//        qDebug("lettre validée %c",it->first.back());
+//        qDebug("proba du validé %f",it->second.second);
+        if(it->first.back() != '\0' || monmot.size()==0) {
+            monmot += QString(it->first.back());
+            for(uint i=0; i<cePr.size()-1; i++) {
+                cePr[i] = cePr[i+1];
+            }
         }
+//        qDebug("taille mot %i", monmot.size());
         cePr[cePr.size()-1] = it->first.back();
-    } while (it->first.back() != '\0' && monmot.size() <= maxsize);
-
-    return monmot;
+    } while ( ((it->first.back()!='\0') || forcedSize) && monmot.size() <= maxsize);
+//    qDebug("compt : %i", compt);
+    //TODO : si des bugs arrivent... peut être lié au mention 'forcedsize' et if... ligne 144 qui n'ont
+    //pas été proprement testée par flemme
+    return monmot.toStdString();
 }
