@@ -41,6 +41,8 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
 
     //Selectionne l'onglet de départ
     ui->tabWidget->setCurrentIndex(0);
+
+
 }
 
 FenetrePrincipale::~FenetrePrincipale()
@@ -52,6 +54,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     ui->centralwidget->setCursor(Qt::WaitCursor);
     ui->onglet_analyse->setEnabled(false);
     ui->progr_Analyse->setValue(0); //inutile.
+    ui->tabWidget->setTabIcon(0,QIcon());
     int avRecup(5), avAnal(90), avProbatab(5); //doit sommer a 100. Avancement (%) de chaque étape
 
 //Partie 1 : Récupération de la liste de mots
@@ -101,7 +104,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
         //cePrDebut et cePrFin sont des itérateur indiquant le début et la fin de l'enchaînement de lettre examiné actuellement
 
         while(it!=charmap.end()) {
-            //pr = sous vecteur de it->first de [0] à [lcoh-2] : contient lcoh-1 éléments
+            //pr = sous vecteur de it->first de [0] #FFBF00à [lcoh-2] : contient lcoh-1 éléments
             //c'est l'enchainement de lettres précédente --> utilisé pour déterminer la proba de l'actuelle
             std::vector<QChar> pr(&it->first[0], &it->first[lcoh-1]);
             cePrDebut = it;
@@ -255,9 +258,14 @@ void FenetrePrincipale::unchecking() {
 
 void FenetrePrincipale::on_spin_lcoh_valueChanged(int value)
 {
-    if((A_analysed|B_analysed)&((uint)value!=lcoh))
+    QIcon p(":/icones/icons/warning.png");
+    if( A_analysed & ((uint)value!=lcoh) ) {
         ui->spin_lcoh->setStyleSheet("background-color: #FFBF00");
-    else
+        ui->tabWidget->setTabIcon(0,p);
+    }
+    else {
         ui->spin_lcoh->setStyleSheet("");
+        ui->tabWidget->setTabIcon(0,QIcon());
+    }
 
 }
