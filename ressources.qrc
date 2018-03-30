@@ -1,2 +1,6 @@
-<RCC/>
-
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/checkbox.png</file>
+        <file>icons/warning.png</file>
+    </qresource>
+</RCC>
