@@ -42,7 +42,10 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     //Selectionne l'onglet de départ
     ui->tabWidget->setCurrentIndex(0);
 
-
+    //Connexion signal/slot pour detection changement
+    QObject::connect(ui->radio_ignore, SIGNAL(clicked()), this, SLOT(traitement_modifie()));
+    QObject::connect(ui->radio_minable, SIGNAL(clicked()), this, SLOT(traitement_modifie()));
+    QObject::connect(ui->radio_speciaux, SIGNAL(clicked()), this, SLOT(traitement_modifie()));
 }
 
 FenetrePrincipale::~FenetrePrincipale()
@@ -188,6 +191,10 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     ui->onglet_analyse->setEnabled(true);
     ui->centralwidget->unsetCursor();
 
+    //Supprime les warning de changement
+    traitement_modifie();
+    on_spin_lcoh_valueChanged(lcoh);
+
     ui->tabWidget->setCurrentIndex(1);
 }
 
@@ -258,8 +265,9 @@ void FenetrePrincipale::unchecking() {
     ui->check_troll->setChecked(false);
 }
 
-void FenetrePrincipale::analyse_changed(bool changed) {
-    if (changed) {
+void FenetrePrincipale::check_analyse_changed() {
+    bool changed = listeMots_changed || traitement_changed || lcoh_changed;
+    if (changed && analyse!=aucun) {
         QIcon p(":/icones/icons/warning.png");
         ui->tabWidget->setTabIcon(0,p);
         ui->statusbar->showMessage("Attention, vous devez refaire l'analyse pour que les changements soient pris en compte");
@@ -270,31 +278,67 @@ void FenetrePrincipale::analyse_changed(bool changed) {
     }
 }
 
-void FenetrePrincipale::on_spin_lcoh_valueChanged(int value)
-{
+void FenetrePrincipale::on_spin_lcoh_valueChanged(int value) {
     if( (analyse==type_Trait::utf_8) & ((uint)value!=lcoh) ) {
         ui->spin_lcoh->setStyleSheet("background-color: #FFBF00");
-        analyse_changed(true);
-    }
+        lcoh_changed = true; }
     else {
         ui->spin_lcoh->setStyleSheet("");
-        analyse_changed(false);
+        lcoh_changed = false; }
+    check_analyse_changed();
+}
+
+void FenetrePrincipale::traitement_modifie() {
+    if(analyse!=aucun) {
+        if(selectedTrait()!=analyse) {
+            traitement_changed=true;
+            if(ui->radio_ignore->isChecked()) {
+                ui->radio_ignore->setStyleSheet("background-color: #FFBF00");
+                ui->radio_minable->setStyleSheet("");
+                ui->radio_speciaux->setStyleSheet(""); }
+            else if(ui->radio_minable->isChecked()) {
+                ui->radio_ignore->setStyleSheet("");
+                ui->radio_minable->setStyleSheet("background-color: #FFBF00");
+                ui->radio_speciaux->setStyleSheet(""); }
+            else if(ui->radio_speciaux->isChecked()) {
+                ui->radio_ignore->setStyleSheet("");
+                ui->radio_minable->setStyleSheet("");
+                ui->radio_speciaux->setStyleSheet("background-color: #FFBF00"); }
+        }
+        else {
+            traitement_changed=false;
+            ui->radio_ignore->setStyleSheet("");
+            ui->radio_minable->setStyleSheet("");
+            ui->radio_speciaux->setStyleSheet("");
+        }
+
     }
+    check_analyse_changed();
 }
 
-void FenetrePrincipale::on_radio_ignore_toggled(bool checked)
-{
-    if(checked) {
+FenetrePrincipale::type_Trait FenetrePrincipale::selectedTrait() {
+    if(ui->radio_ignore->isChecked())
+        return ascii;
+    else if(ui->radio_minable->isChecked())
+        return asciiplus;
+    else if(ui->radio_speciaux->isChecked())
+        return utf_8;
+    else
+        return aucun;
+}
 
+void FenetrePrincipale::liste_modifie() {
+    if(analyse!=aucun) {
+        //TODO : voir ça mieux, faut factoriser un peu ce code TT 3 cas
+        bool usedLangDef = (nomListeMots==nomListeMotsDefaut);
+        if(ui->radio_langPerso->isChecked() && usedLangDef) {
+            ui->radio_langDef->setStyleSheet("");
+            ui->radio_langPerso->setStyleSheet("background-color: #FFBF00"); }
+        if(ui->radio_langDef->isChecked() && !usedLangDef) {
+            ui->radio_langDef->setStyleSheet("background-color: #FFBF00");
+            ui->radio_langPerso->setStyleSheet(""); }
+
+        }
     }
-}
-
-void FenetrePrincipale::on_radio_minable_toggled(bool checked)
-{
-
-}
-
-void FenetrePrincipale::on_radio_speciaux_toggled(bool checked)
-{
-
+    check_analyse_changed();
 }

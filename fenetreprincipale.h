@@ -18,12 +18,8 @@ public:
     explicit FenetrePrincipale(QWidget *parent = 0);
     ~FenetrePrincipale();
 
-    enum type_Trait {
-        aucun=0,
-        ascii=1,
-        asciiplus=2,
-        utf_8=3
-    };
+    enum type_Trait {aucun, ascii, asciiplus, utf_8};
+    type_Trait selectedTrait();
 
 public slots:
     void on_bouton_analyser_clicked();
@@ -42,12 +38,10 @@ public slots:
 
 private slots:
     //Slot de warning, analyse à refaire
-    void analyse_changed(bool changed);
+    void check_analyse_changed();
     void on_spin_lcoh_valueChanged(int value);
-
-    void on_radio_ignore_toggled(bool checked);
-    void on_radio_minable_toggled(bool checked);
-    void on_radio_speciaux_toggled(bool checked);
+    void traitement_modifie();
+    void liste_modifie();
 
 private:
     Ui::FenetrePrincipale *ui;
@@ -59,10 +53,12 @@ private:
     //Paramètre de l'analyse faite :
     QString nomListeMots;
     type_Trait analyse = aucun;
-//    bool A_analysed = false; //indique que l'analyse à été fait par la méthode A
-//    bool B_analysed = false; // --- --- par la méthode B
-//    bool clearAcc_analysed = false;
     uint lcoh;
+
+    //Paramètre changement sur l'onglet analyse
+    bool listeMots_changed=false;
+    bool traitement_changed=false;
+    bool lcoh_changed=false;
 
     FenAide *m_FenAide;
 };

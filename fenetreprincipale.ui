@@ -51,7 +51,7 @@
            <item row="1" column="0" colspan="2">
             <widget class="QRadioButton" name="radio_langDef">
              <property name="text">
-              <string>Utiliser la langue par défaut (///Nom liste défaut////)</string>
+              <string>Utiliser la langue par défaut (////Nom liste défaut////)</string>
              </property>
              <property name="checked">
               <bool>true</bool>
