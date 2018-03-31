@@ -97,12 +97,11 @@ void QanalyzeWord(const QString &lemot, map<vector<QChar>, pair<int,double>> &ch
     return;
 }
 
-string generateur (double probatab[27][27][27], uint maxsize, bool forcedSize) {
+string generateur (double probatab[27][27][27], bool forcedSize, uint maxsize) {
     string monmot ="";
     int pr1=0; //lettre précédente
     int pr2=0; //avant-dernière lettre
     int pot; //lettre potentielle
-
     do {
         pot=0;
         double r = (double)rand() / RAND_MAX;

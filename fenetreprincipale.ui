@@ -162,6 +162,9 @@
            </item>
            <item row="4" column="1">
             <widget class="QSpinBox" name="spin_lcoh">
+             <property name="accelerated">
+              <bool>true</bool>
+             </property>
              <property name="suffix">
               <string> lettres</string>
              </property>
@@ -225,7 +228,7 @@ cette méthode est honteusement longue</string>
            <item row="2" column="3">
             <widget class="QLabel" name="Bof_2">
              <property name="toolTip">
-              <string>Bah, limité au français quoi. Et en plus, ça gère pas les tirets</string>
+              <string>On génère pas des mots accentués. Et en plus, ça gère pas les tirets</string>
              </property>
              <property name="styleSheet">
               <string notr="true">color: rgb(223, 177, 19);</string>
@@ -316,7 +319,7 @@ Il vaut donc mieux que la liste de mots originale soit sans accents</string>
            <item row="2" column="1" colspan="2">
             <widget class="QRadioButton" name="radio_minable">
              <property name="toolTip">
-              <string>Seul certains caractères spéciaux sont pris en compte :
+              <string>Ces caractères spéciaux sont remplacé par leur valeur non-accentué :
 ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÌÍÎÏìíîïÙÚÛÜùúûüÿÑñÇç</string>
              </property>
              <property name="text">
@@ -546,9 +549,6 @@ Il vaut donc mieux que la liste de mots originale soit sans accents</string>
             </widget>
            </item>
           </layout>
-          <zorder>label_resume_analyse</zorder>
-          <zorder>label_resume_lcoh</zorder>
-          <zorder>label_resume_lcoh</zorder>
          </widget>
         </item>
        </layout>

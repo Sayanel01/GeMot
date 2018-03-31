@@ -86,13 +86,13 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
 //Partie 2 et 3 : Analyse liste mots / construction des proba
     ui->statusbar->showMessage("Analyse de la liste de mots...");
     int nb=0; //nombre de lettres traitées
-//version A :
+//Partie 2 version A :
     if(ui->radio_speciaux->isChecked()) { //Traitement moderne
         lcoh = ui->spin_lcoh->value();
         for(uint i=0; i<mots.size(); i++) {
             QString qmot=QString::fromStdString(mots[i]);
             QanalyzeWord(qmot,charmap, lcoh, nb);
-            if (i%100==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
+            if (i%500==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
                 ui->progr_Analyse->setValue(avRecup+i/(float)mots.size()*avAnal);
                 QCoreApplication::processEvents(); //permet l'actualisation du gui. Ralenti les calcul...
             }
@@ -127,8 +127,8 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
                     repasse->second.second += prev(repasse)->second.second; //prev() = élément précédent
             }
         }
-        A_analysed=true;
-        B_analysed=false;
+//Traitement terminé. Indication lié au traitement utf_8
+        analyse = utf_8;
         ui->check_forcerTaille->setEnabled(false);
         ui->check_forcerTaille->setToolTip("Un bug très (très) idiot empêche de forcer la taille des mots "
                                            "avec la méthode gérant tous les type de caractères\n"
@@ -136,13 +136,14 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
         ui->label_resume_analyse->setText("Type d'analyse : tous caractères spéciaux");
         ui->label_resume_lcoh->setText("Longueur de cohérence : "+QString::number(lcoh));
     }
-//version B :
+//Patie 2 version B :
     else { //Traitement à l'ancienne (radio Ignore et radio gère très mal
         int lettertab[27][27][27] = {0}; //--> lettertab[2][1][3] = nombre d'occurence de "cab" ("3","1","2")
         int nb=0; //nombre total de lettres traités
+        bool clearAccent = ui->radio_minable->isChecked(); //ascii ou asciiplus
         for(unsigned int i=0; i<mots.size(); i++) {
-            nb += analyzeWord(mots[i], lettertab, ui->radio_minable->isChecked());
-            if (i%100==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
+            nb += analyzeWord(mots[i], lettertab, clearAccent);
+            if (i%500==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
                 ui->progr_Analyse->setValue(avRecup+i/(float)mots.size()*avAnal);
                 QCoreApplication::processEvents(); //permet l'actualisation du gui. Ralenti les calcul...
             }
@@ -163,18 +164,22 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
                 }
             }
         }
-        B_analysed=true;
-        A_analysed=false;
-        lcoh=0; //pas de lcoh ici
+//Traitement terminé. Indication lié au traitement ascii
+        if (clearAccent) {
+            ui->label_resume_analyse->setText("Type d'analyse : accents désaccentés");
+            analyse = asciiplus; }
+        else {
+            ui->label_resume_analyse->setText("Type d'analyse : sans accents");
+            analyse = ascii; }
+        //Autorise le "forcer_taille"
         ui->check_forcerTaille->setEnabled(true);
         ui->check_forcerTaille->setToolTip("");
-        if ( ui->radio_minable->isChecked() )
-            ui->label_resume_analyse->setText("Type d'analyse : accents simples");
-        else
-            ui->label_resume_analyse->setText("Type d'analyse : sans accent");
-        ui->label_resume_lcoh->setVisible(false);
+
+        lcoh=0; //pas de lcoh ici. lcoh=0 <=> traitement ascii
+        ui->label_resume_lcoh->setVisible(false); //cache la valeur lcoh
     }
 
+//Traitement terminé. Indications générales
     ui->progr_Analyse->setValue(avRecup+avAnal+avProbatab-1);
     ui->statusbar->showMessage("Analyse terminée ! Prêt a inventer des mots !");
     ui->progr_Analyse->setToolTip("Non, la barre ne va pas à 100%. C'est frustrant, hein ?");
@@ -188,25 +193,22 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
 
 void FenetrePrincipale::on_bouton_generer_clicked() {
     ui->check_troll->setChecked(false);
-    if (!A_analysed&&!B_analysed)
-        return;
-    else if(A_analysed && B_analysed)
-        ui->statusbar->showMessage("Heu... méthode A et B simultanée. On va faire comme si y avait que A, ok ?");
+    if ((analyse==aucun)) {
+        ui->statusbar->showMessage("Vous devez analyser une liste de mots avant de générer des mots");
+        return; }
 
     uint taille_max = ui->spin_tailleMax->value();
-
     if(taille_max==0)
         taille_max=100;
 
     //TODO : obliger la réanalyse si on change lcoh (ou autre chose)
-    //et --> prendre la fin de lcoh, pas le début ? permet de réduire lcoh pour la generation
 
     std::string mot;
     for (int i=0; i<ui->spin_nbMots->value(); i++) {
-        if(A_analysed)
+        if(analyse==utf_8)
             mot = Qgenerateur(charmap,lcoh, ui->check_forcerTaille->isChecked(), taille_max);
-        if(B_analysed)
-            mot = generateur(probatab, taille_max, ui->check_forcerTaille->isChecked());
+        if(analyse==ascii)
+            mot = generateur(probatab, ui->check_forcerTaille->isChecked(), taille_max);
         ui->text_mots->append(QString::fromStdString(mot));
     }
 }
@@ -256,16 +258,43 @@ void FenetrePrincipale::unchecking() {
     ui->check_troll->setChecked(false);
 }
 
+void FenetrePrincipale::analyse_changed(bool changed) {
+    if (changed) {
+        QIcon p(":/icones/icons/warning.png");
+        ui->tabWidget->setTabIcon(0,p);
+        ui->statusbar->showMessage("Attention, vous devez refaire l'analyse pour que les changements soient pris en compte");
+    }
+    else {
+        ui->tabWidget->setTabIcon(0,QIcon());
+        ui->statusbar->showMessage("");
+    }
+}
+
 void FenetrePrincipale::on_spin_lcoh_valueChanged(int value)
 {
-    QIcon p(":/icones/icons/warning.png");
-    if( A_analysed & ((uint)value!=lcoh) ) {
+    if( (analyse==type_Trait::utf_8) & ((uint)value!=lcoh) ) {
         ui->spin_lcoh->setStyleSheet("background-color: #FFBF00");
-        ui->tabWidget->setTabIcon(0,p);
+        analyse_changed(true);
     }
     else {
         ui->spin_lcoh->setStyleSheet("");
-        ui->tabWidget->setTabIcon(0,QIcon());
+        analyse_changed(false);
     }
+}
+
+void FenetrePrincipale::on_radio_ignore_toggled(bool checked)
+{
+    if(checked) {
+
+    }
+}
+
+void FenetrePrincipale::on_radio_minable_toggled(bool checked)
+{
+
+}
+
+void FenetrePrincipale::on_radio_speciaux_toggled(bool checked)
+{
 
 }
