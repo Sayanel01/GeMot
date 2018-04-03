@@ -4,6 +4,7 @@
 #include <thread>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include <QMessageBox>
 #include "fenetreprincipale.h"
 #include "ui_fenetreprincipale.h"
 #include <string>
@@ -22,11 +23,14 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
         ui->radio_langPerso->setToolTip(ListeMotsInstruction);
         ui->bouton_selecFichier->setToolTip(ui->radio_langPerso->toolTip());
 
+    //Éléments de la statusbar
+    ui->statusbar->setFixedHeight(20);
+    ui->statusbar->showMessage("En attente de lancement...");
+
     //Lecture du fichier des valeurs par défaut:
-    QFile file(":/valeursDefaut/valeursDefaut/Def.xml");
+    QFile file("WordLists/Parametres.xml");
     if(file.open(QIODevice::ReadOnly)) {
         QXmlStreamReader xmlReader(&file);
-
         if(xmlReader.readNextStartElement()) {
             if (xmlReader.name() == "valeursDef") {
                 while(xmlReader.readNextStartElement()) {
@@ -40,8 +44,6 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
                             ui->radio_minable->setChecked(true);
                         else if(wantedAnalyse==utf_8)
                             ui->radio_speciaux->setChecked(true);
-                        else
-                            ui->radio_speciaux->setChecked(false);
                     }
                     else if (xmlReader.name() == "lcoh")
                         ui->spin_lcoh->setValue(xmlReader.readElementText().toInt());
@@ -57,17 +59,13 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
         }
     }
     else{
-        ui->statusbar->showMessage("et merde");
+        ui->statusbar->showMessage("Problème lors de la lecture des valeurs par défaut");
     }
 
     //Indication de la liste par défaut
     QFileInfo fi(nomListeMotsDefaut);
     QString textLangDef = "Utiliser la langue par défaut ("+fi.fileName()+")";
     ui->radio_langDef->setText(textLangDef);
-
-    //Éléments de la statusbar
-    ui->statusbar->setFixedHeight(20);
-//    ui->statusbar->showMessage("En attente de lancement...");
 
     //Efface tous les éléments affiché par le bouton "détail"
     ui->Bof->setVisible(false);
@@ -318,6 +316,69 @@ void FenetrePrincipale::on_action_propos_de_ce_programme_triggered() {
     m_Infos->show();
 }
 
+void FenetrePrincipale::on_actionUtiliser_les_valeur_actuelles_par_defaut_triggered() {
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Changer valeurs par defaut",
+                                  "Voulez vous changer les valeurs par défaut du programme ?\n"
+                                  "\nLes valeurs par défaut (càd celle au lancement du programme) seront remplacées par les valeurs actuelles\n"
+                                  "Sont concernés :\n"
+                                  "    - La liste de mot\n"
+                                  "    - La longueur de cohérence\n"
+                                  "    - Le nombre de mot à générer\n"
+                                  "    - La taille maximale des mots\n",
+                                  QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        //préparation pour écriture du chemin de la liste de mot
+        QFile file("WordLists/Parametres.xml");
+        if(file.open(QIODevice::WriteOnly)) {
+            QXmlStreamWriter xmlWriter(&file);
+            xmlWriter.writeStartElement("?xml version=\"1.0\" encoding=\"utf-8\"?");
+            xmlWriter.writeCharacters("\n");
+            xmlWriter.writeStartElement("valeursDef");
+            xmlWriter.writeCharacters("\n\t");
+                xmlWriter.writeStartElement("nomListe");
+                    if(ui->radio_langPerso->isChecked())
+                        xmlWriter.writeCharacters(nomListeMots);
+                    else
+                        xmlWriter.writeCharacters(nomListeMotsDefaut);
+                xmlWriter.writeEndElement();
+                xmlWriter.writeCharacters("\n");
+                xmlWriter.writeComment("Le chemin peut être donné en absolu ou en relatif");
+                xmlWriter.writeCharacters("\n\t");
+                xmlWriter.writeStartElement("modeTraitement");
+                    if(ui->radio_ignore->isChecked())
+                        xmlWriter.writeCharacters("ascii");
+                    else if(ui->radio_minable->isChecked())
+                        xmlWriter.writeCharacters("asciiplus");
+                    else if(ui->radio_speciaux->isChecked())
+                        xmlWriter.writeCharacters("utf_8");
+                    else
+                        xmlWriter.writeCharacters("aucun");
+                xmlWriter.writeEndElement();
+                xmlWriter.writeCharacters("\n");
+                xmlWriter.writeComment("Les valeurs possible du mode de traitement sont : aucun, ascii, asciiplus et utf_8");
+                xmlWriter.writeCharacters("\n\t");
+                xmlWriter.writeStartElement("lcoh");
+                    xmlWriter.writeCharacters(QString::number(ui->spin_lcoh->value()));
+                xmlWriter.writeEndElement();
+                xmlWriter.writeCharacters("\n\t");
+                xmlWriter.writeStartElement("nbMots");
+                    xmlWriter.writeCharacters(QString::number(ui->spin_nbMots->value()));
+                xmlWriter.writeEndElement();
+                xmlWriter.writeCharacters("\n\t");
+                xmlWriter.writeStartElement("tailleMax");
+                    xmlWriter.writeCharacters(QString::number(ui->spin_tailleMax->value()));
+                xmlWriter.writeEndElement();
+                xmlWriter.writeCharacters("\n");
+            xmlWriter.writeEndElement();
+            xmlWriter.writeCharacters("\n");
+        }
+        else{
+            ui->statusbar->showMessage("Problème lors de l'écriture des valeurs par défaut");
+        }
+    }
+}
+
 void FenetrePrincipale::on_check_troll_clicked() {
     QTimer::singleShot(80, this, SLOT(unchecking()));
 }
@@ -416,7 +477,6 @@ void FenetrePrincipale::liste_modifie() {
             ui->radio_langPerso->setStyleSheet("");
             listeMots_changed=true; }
         else if(ui->bouton_selecFichier->text()!=nomListeAnalysePrecedente&& !usedLangDef) {
-//            std::cout << "nom liste : " << nomListeMots.toStdString() << std::endl;
             ui->radio_langDef->setStyleSheet("");
             ui->radio_langPerso->setStyleSheet("background-color: #FFBF00");
             listeMots_changed=true; }
@@ -425,7 +485,6 @@ void FenetrePrincipale::liste_modifie() {
             ui->radio_langPerso->setStyleSheet("");
             listeMots_changed=false; }
         else {
-            qDebug("aaaa");
             ui->radio_langDef->setStyleSheet("");
             ui->radio_langPerso->setStyleSheet("");
             listeMots_changed=false; }

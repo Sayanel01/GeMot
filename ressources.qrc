@@ -3,7 +3,4 @@
         <file>icons/checkbox.png</file>
         <file>icons/warning.png</file>
     </qresource>
-    <qresource prefix="/valeursDefaut">
-        <file>valeursDefaut/Def.xml</file>
-    </qresource>
 </RCC>

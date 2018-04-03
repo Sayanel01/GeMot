@@ -35,6 +35,7 @@ public slots:
 
     void on_actionAide_triggered();
     void on_action_propos_de_ce_programme_triggered();
+    void on_actionUtiliser_les_valeur_actuelles_par_defaut_triggered();
 
     void on_check_troll_clicked();
     void unchecking();
