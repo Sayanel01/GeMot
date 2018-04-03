@@ -59,6 +59,7 @@ private:
     bool listeMots_changed=false;
     bool traitement_changed=false;
     bool lcoh_changed=false;
+    QString nomListeAnalysePrecedente;
 
     FenAide *m_FenAide;
 };

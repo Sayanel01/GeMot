@@ -46,6 +46,14 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     QObject::connect(ui->radio_ignore, SIGNAL(clicked()), this, SLOT(traitement_modifie()));
     QObject::connect(ui->radio_minable, SIGNAL(clicked()), this, SLOT(traitement_modifie()));
     QObject::connect(ui->radio_speciaux, SIGNAL(clicked()), this, SLOT(traitement_modifie()));
+
+    QObject::connect(ui->radio_langDef, SIGNAL(clicked()), this, SLOT(liste_modifie()));
+    QObject::connect(ui->radio_langPerso, SIGNAL(clicked()), this, SLOT(liste_modifie()));
+    QObject::connect(ui->bouton_selecFichier, SIGNAL(clicked()), this, SLOT(liste_modifie()));
+
+
+    //Quitter via le menu
+    QObject::connect(ui->actionQuitter_3, SIGNAL(triggered()), qApp, SLOT(quit()));
 }
 
 FenetrePrincipale::~FenetrePrincipale()
@@ -194,6 +202,9 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     //Supprime les warning de changement
     traitement_modifie();
     on_spin_lcoh_valueChanged(lcoh);
+        QFile file(nomListeMots); QFileInfo fileinfo(file);
+        nomListeAnalysePrecedente=fileinfo.fileName(); //récupération du nom de la liste de mots
+    liste_modifie();
 
     ui->tabWidget->setCurrentIndex(1);
 }
@@ -224,6 +235,7 @@ void FenetrePrincipale::on_bouton_selecFichier_clicked() {
     nomListeMots = QFileDialog::getOpenFileName(this, "Selectionner une liste de mot .txt", "", "Fichier texte (*.txt)");
     QFile file(nomListeMots);
     QFileInfo fileinfo(file);
+    liste_modifie();
     ui->bouton_selecFichier->setText(fileinfo.fileName());
     if(ui->bouton_selecFichier->text()!="")
         ui->radio_langPerso->setChecked(true);
@@ -311,7 +323,6 @@ void FenetrePrincipale::traitement_modifie() {
             ui->radio_minable->setStyleSheet("");
             ui->radio_speciaux->setStyleSheet("");
         }
-
     }
     check_analyse_changed();
 }
@@ -329,16 +340,34 @@ FenetrePrincipale::type_Trait FenetrePrincipale::selectedTrait() {
 
 void FenetrePrincipale::liste_modifie() {
     if(analyse!=aucun) {
-        //TODO : voir ça mieux, faut factoriser un peu ce code TT 3 cas
         bool usedLangDef = (nomListeMots==nomListeMotsDefaut);
+
         if(ui->radio_langPerso->isChecked() && usedLangDef) {
             ui->radio_langDef->setStyleSheet("");
-            ui->radio_langPerso->setStyleSheet("background-color: #FFBF00"); }
-        if(ui->radio_langDef->isChecked() && !usedLangDef) {
+            ui->radio_langPerso->setStyleSheet("background-color: #FFBF00");
+            listeMots_changed=true; }
+        else if (ui->radio_langDef->isChecked() && usedLangDef) {
+            ui->radio_langDef->setStyleSheet("");
+            ui->radio_langPerso->setStyleSheet("");
+            listeMots_changed=false; }
+        else if(ui->radio_langDef->isChecked() && !usedLangDef) {
             ui->radio_langDef->setStyleSheet("background-color: #FFBF00");
-            ui->radio_langPerso->setStyleSheet(""); }
-
-        }
+            ui->radio_langPerso->setStyleSheet("");
+            listeMots_changed=true; }
+        else if(ui->bouton_selecFichier->text()!=nomListeAnalysePrecedente&& !usedLangDef) {
+//            std::cout << "nom liste : " << nomListeMots.toStdString() << std::endl;
+            ui->radio_langDef->setStyleSheet("");
+            ui->radio_langPerso->setStyleSheet("background-color: #FFBF00");
+            listeMots_changed=true; }
+        else if(ui->radio_langPerso->isChecked() && !usedLangDef ) {
+            ui->radio_langDef->setStyleSheet("");
+            ui->radio_langPerso->setStyleSheet("");
+            listeMots_changed=false; }
+        else {
+            qDebug("aaaa");
+            ui->radio_langDef->setStyleSheet("");
+            ui->radio_langPerso->setStyleSheet("");
+            listeMots_changed=false; }
     }
     check_analyse_changed();
 }
