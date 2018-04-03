@@ -16,14 +16,14 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>GeMots</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="onglet_analyse">
        <attribute name="title">
@@ -411,7 +411,14 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
         <string>Génération de mots</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="5" column="2">
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_tailleMots">
+          <property name="text">
+           <string>Taille max des mots</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="2">
          <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -424,14 +431,14 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
           </property>
          </spacer>
         </item>
-        <item row="6" column="2">
+        <item row="10" column="2">
          <widget class="QPushButton" name="bouton_trier">
           <property name="text">
            <string>Trier</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
+        <item row="9" column="1">
          <spacer name="verticalSpacer_4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -444,33 +451,14 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
           </property>
          </spacer>
         </item>
-        <item row="7" column="2">
+        <item row="11" column="2">
          <widget class="QPushButton" name="bouton_nettoyer">
           <property name="text">
            <string>Nettoyer</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_tailleMots">
-          <property name="text">
-           <string>Taille max des mots</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="3">
-         <widget class="QPushButton" name="bouton_generer">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Inventer des mots</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0" colspan="2">
+        <item row="5" column="0" colspan="2">
          <widget class="QCheckBox" name="check_forcerTaille">
           <property name="layoutDirection">
            <enum>Qt::RightToLeft</enum>
@@ -496,7 +484,7 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
           </property>
          </widget>
         </item>
-        <item row="0" column="3" rowspan="9">
+        <item row="0" column="3" rowspan="13">
          <widget class="QTextEdit" name="text_mots"/>
         </item>
         <item row="1" column="1">
@@ -509,7 +497,7 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
           </property>
          </widget>
         </item>
-        <item row="4" column="0" colspan="2">
+        <item row="6" column="0" colspan="2">
          <widget class="QCheckBox" name="check_troll">
           <property name="layoutDirection">
            <enum>Qt::RightToLeft</enum>
@@ -526,7 +514,7 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
           </property>
          </widget>
         </item>
-        <item row="6" column="0" rowspan="2" colspan="2">
+        <item row="10" column="0" rowspan="2" colspan="2">
          <widget class="QFrame" name="fram_resume">
           <property name="frameShape">
            <enum>QFrame::Box</enum>
@@ -551,6 +539,57 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
            </item>
           </layout>
          </widget>
+        </item>
+        <item row="3" column="0" colspan="3">
+         <widget class="QPushButton" name="bouton_generer">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Inventer des mots</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <spacer name="verticalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="4" column="1">
+         <spacer name="verticalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="7" column="1">
+         <spacer name="verticalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -587,8 +626,6 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
      </widget>
      <addaction name="menuQuitter_2"/>
     </widget>
-    <addaction name="actionCharger_automatiquement_la_liste_de_mot_par_d_faut"/>
-    <addaction name="actionAnalyser_la_liste_par_d_faut_au_lancement"/>
     <addaction name="separator"/>
     <addaction name="actionUtiliser_les_valeur_actuelles_par_defaut"/>
     <addaction name="separator"/>

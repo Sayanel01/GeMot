@@ -5,6 +5,7 @@
 #include <QProgressBar>
 #include "fonctions.h"
 #include "fenaide.h"
+#include "infos.h"
 
 namespace Ui {
 class FenetrePrincipale;
@@ -20,6 +21,7 @@ public:
 
     enum type_Trait {aucun, ascii, asciiplus, utf_8};
     type_Trait selectedTrait();
+    type_Trait stringToType(QString stringType);
 
 public slots:
     void on_bouton_analyser_clicked();
@@ -32,6 +34,7 @@ public slots:
     void on_bouton_trier_clicked();
 
     void on_actionAide_triggered();
+    void on_action_propos_de_ce_programme_triggered();
 
     void on_check_troll_clicked();
     void unchecking();
@@ -46,7 +49,8 @@ private slots:
 private:
     Ui::FenetrePrincipale *ui;
 
-    QString nomListeMotsDefaut="WordLists/Mots_FR_avec_frequence.txt";
+    QString nomListeMotsDefaut;
+//    QString nomListeMotsDefaut="WordLists/Mots_FR_avec_frequence.txt";
     double probatab[27][27][27] = {{{0}}}; //pour methode nulle
     std::map<std::vector<QChar>, std::pair<int,double>> charmap; //pour methode un peu mieux
 
@@ -62,6 +66,7 @@ private:
     QString nomListeAnalysePrecedente;
 
     FenAide *m_FenAide;
+    Infos *m_Infos;
 };
 
 #endif // FENETREPRINCIPALE_H

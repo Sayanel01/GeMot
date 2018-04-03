@@ -2,8 +2,11 @@
 #include <QProgressBar>
 #include <QTimer>
 #include <thread>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 #include "fenetreprincipale.h"
 #include "ui_fenetreprincipale.h"
+#include <string>
 
 #include <iostream>
 
@@ -19,6 +22,44 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
         ui->radio_langPerso->setToolTip(ListeMotsInstruction);
         ui->bouton_selecFichier->setToolTip(ui->radio_langPerso->toolTip());
 
+    //Lecture du fichier des valeurs par défaut:
+    QFile file(":/valeursDefaut/valeursDefaut/Def.xml");
+    if(file.open(QIODevice::ReadOnly)) {
+        QXmlStreamReader xmlReader(&file);
+
+        if(xmlReader.readNextStartElement()) {
+            if (xmlReader.name() == "valeursDef") {
+                while(xmlReader.readNextStartElement()) {
+                    if (xmlReader.name() == "nomListe")
+                        nomListeMotsDefaut = xmlReader.readElementText();
+                    else if (xmlReader.name() == "modeTraitement") {
+                        type_Trait wantedAnalyse = stringToType(xmlReader.readElementText());
+                        if(wantedAnalyse==ascii)
+                            ui->radio_ignore->setChecked(true);
+                        else if(wantedAnalyse==asciiplus)
+                            ui->radio_minable->setChecked(true);
+                        else if(wantedAnalyse==utf_8)
+                            ui->radio_speciaux->setChecked(true);
+                        else
+                            ui->radio_speciaux->setChecked(false);
+                    }
+                    else if (xmlReader.name() == "lcoh")
+                        ui->spin_lcoh->setValue(xmlReader.readElementText().toInt());
+                    else if (xmlReader.name() == "nbMots")
+                        ui->spin_nbMots->setValue(xmlReader.readElementText().toInt());
+                    else if (xmlReader.name() == "tailleMax")
+                        ui->spin_tailleMax->setValue(xmlReader.readElementText().toInt());
+                    else
+                        xmlReader.skipCurrentElement();
+                }
+            }
+            xmlReader.skipCurrentElement();
+        }
+    }
+    else{
+        ui->statusbar->showMessage("et merde");
+    }
+
     //Indication de la liste par défaut
     QFileInfo fi(nomListeMotsDefaut);
     QString textLangDef = "Utiliser la langue par défaut ("+fi.fileName()+")";
@@ -26,7 +67,7 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
 
     //Éléments de la statusbar
     ui->statusbar->setFixedHeight(20);
-    ui->statusbar->showMessage("En attente de lancement...");
+//    ui->statusbar->showMessage("En attente de lancement...");
 
     //Efface tous les éléments affiché par le bouton "détail"
     ui->Bof->setVisible(false);
@@ -51,7 +92,6 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     QObject::connect(ui->radio_langPerso, SIGNAL(clicked()), this, SLOT(liste_modifie()));
     QObject::connect(ui->bouton_selecFichier, SIGNAL(clicked()), this, SLOT(liste_modifie()));
 
-
     //Quitter via le menu
     QObject::connect(ui->actionQuitter_3, SIGNAL(triggered()), qApp, SLOT(quit()));
 }
@@ -66,6 +106,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     ui->onglet_analyse->setEnabled(false);
     ui->progr_Analyse->setValue(0); //inutile.
     ui->tabWidget->setTabIcon(0,QIcon());
+    ui->statusbar->setToolTip("");
     int avRecup(5), avAnal(90), avProbatab(5); //doit sommer a 100. Avancement (%) de chaque étape
 
 //Partie 1 : Récupération de la liste de mots
@@ -89,7 +130,11 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
         ui->progr_Analyse->setValue(avRecup);
     }
     else {
-        ui->statusbar->showMessage("Impossible de lire la liste de mots");
+        ui->statusbar->showMessage("Impossible de lire la liste de mots (voir ici pour plus de détails)");
+        ui->statusbar->setToolTip("La liste de mot suivante :\n"+nomListeMots+
+                                  "\nn'a pas pu être lue. Vérifiez qu'elle existe bien et est une liste de mots au format .txt, 1 mot par ligne");
+        ui->onglet_analyse->setEnabled(true);
+        ui->centralwidget->unsetCursor();
         //TODO : indiquer erreur sur la liste de mot
         return;
     }
@@ -192,7 +237,6 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
 
 //Traitement terminé. Indications générales
     ui->progr_Analyse->setValue(avRecup+avAnal+avProbatab-1);
-    ui->statusbar->showMessage("Analyse terminée ! Prêt a inventer des mots !");
     ui->progr_Analyse->setToolTip("Non, la barre ne va pas à 100%. C'est frustrant, hein ?");
 
     ui->onglet_generation->setEnabled(true);
@@ -206,6 +250,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
         nomListeAnalysePrecedente=fileinfo.fileName(); //récupération du nom de la liste de mots
     liste_modifie();
 
+    ui->statusbar->showMessage("Analyse terminée ! Prêt a inventer des mots !");
     ui->tabWidget->setCurrentIndex(1);
 }
 
@@ -266,6 +311,11 @@ void FenetrePrincipale::on_bouton_trier_clicked() {
 void FenetrePrincipale::on_actionAide_triggered() {
     m_FenAide = new FenAide();
     m_FenAide->show();
+}
+
+void FenetrePrincipale::on_action_propos_de_ce_programme_triggered() {
+    m_Infos = new Infos();
+    m_Infos->show();
 }
 
 void FenetrePrincipale::on_check_troll_clicked() {
@@ -336,6 +386,17 @@ FenetrePrincipale::type_Trait FenetrePrincipale::selectedTrait() {
         return utf_8;
     else
         return aucun;
+}
+
+FenetrePrincipale::type_Trait FenetrePrincipale::stringToType(QString stringType) {
+    if (stringType == "ascii")
+        return FenetrePrincipale::ascii;
+    else if (stringType == "asciiplus")
+        return FenetrePrincipale::asciiplus;
+    else if (stringType == "utf_8")
+        return FenetrePrincipale::utf_8;
+    else
+        return FenetrePrincipale::aucun;
 }
 
 void FenetrePrincipale::liste_modifie() {

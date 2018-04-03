@@ -6,6 +6,7 @@
 #include <fstream>
 #include <map>
 #include <QString>
+#include "fenetreprincipale.h"
 
 
 //Fonctions primaires fn_bases.cpp

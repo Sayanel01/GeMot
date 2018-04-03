@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<valeursDef>
+    <nomListe>WordLists/Mots_FR_avec_frequence.txt</nomListe>
+    <modeTraitement>utf_8</modeTraitement>
+    <!-- Les valeurs possible du mode de traitement sont : aucun, ascii, asciiplus et utf_8 -->
+    <lcoh>3</lcoh>
+    <nbMots>1</nbMots>
+    <tailleMax>20</tailleMax>
+</valeursDef>

@@ -4,6 +4,7 @@
 //#include <iostream>
 //#include <cstdlib>
 #include "fonctions.h"
+#include "fenetreprincipale.h"
 
 using namespace std;
 
@@ -137,26 +138,19 @@ string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, boo
         itHigh = charmap.upper_bound(cePrMax);
         it = itLow;
         double r = (double)rand() / RAND_MAX;
-//        qDebug("r : %f", r);
         while (r > it->second.second && it != itHigh) {
-//            qDebug("lettre %c",it->first.back());
-//            qDebug("proba %f",it->second.second);
             it++;
         }
         if (it==itHigh || it==prev(itHigh))
             it=itLow;
-//        qDebug("lettre validée %c",it->first.back());
-//        qDebug("proba du validé %f",it->second.second);
         if(it->first.back() != '\0' || monmot.size()==0) {
             monmot += QString(it->first.back());
             for(uint i=0; i<cePr.size()-1; i++) {
                 cePr[i] = cePr[i+1];
             }
         }
-//        qDebug("taille mot %i", monmot.size());
         cePr[cePr.size()-1] = it->first.back();
     } while ( ((it->first.back()!='\0') || forcedSize) && monmot.size() <= maxsize);
-//    qDebug("compt : %i", compt);
     //TODO : si des bugs arrivent... peut être lié au mention 'forcedsize' et if... ligne 144 qui n'ont
     //pas été proprement testée par flemme
     return monmot.toStdString();
