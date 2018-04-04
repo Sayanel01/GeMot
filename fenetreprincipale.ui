@@ -447,7 +447,7 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
         <item row="10" column="2">
          <widget class="QPushButton" name="bouton_trier">
           <property name="text">
-           <string>Trier</string>
+           <string>Trier par taille</string>
           </property>
          </widget>
         </item>

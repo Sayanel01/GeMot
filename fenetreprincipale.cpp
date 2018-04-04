@@ -92,10 +92,11 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     QObject::connect(ui->bouton_selecFichier, SIGNAL(clicked()), this, SLOT(liste_modifie()));
 
     //Raccourci clavier
-    new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(on_bouton_generer_clicked()));
+    new QShortcut(QKeySequence(Qt::Key_Return || Qt::Key_Enter), this, SLOT(on_bouton_generer_clicked()));
+//    new QShortcut(QKeySequence(Qt::Key_Alt && Qt::Key_Space), this, SLOT(on_bouton_analyser_clicked()));
 
     //Quitter via le menu
-    QObject::connect(ui->actionQuitter_3, SIGNAL(triggered()), qApp, SLOT(quit()));
+    QObject::connect(ui->actionQuitter_3, SIGNAL(triggered()), this, SLOT(quit_troll()));
 }
 
 FenetrePrincipale::~FenetrePrincipale()
@@ -390,6 +391,14 @@ void FenetrePrincipale::on_check_troll_clicked() {
 void FenetrePrincipale::unchecking() {
     std::this_thread::sleep_for(std::chrono::milliseconds(400));
     ui->check_troll->setChecked(false);
+}
+
+void FenetrePrincipale::quit_troll() {
+    QMessageBox::information(this, "Vraiment ?",
+                             "Sinon, y avait plus simple pour quitter hein...\n"
+                             "Pourquoi y a toujours un bouton du menu pour quitter ?\n"
+                             "Qui l'utilse ?...");
+    this->close();
 }
 
 void FenetrePrincipale::check_analyse_changed() {

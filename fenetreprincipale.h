@@ -39,6 +39,7 @@ public slots:
 
     void on_check_troll_clicked();
     void unchecking();
+    void quit_troll();
 
 private slots:
     //Slot de warning, analyse à refaire
