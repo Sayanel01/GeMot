@@ -122,7 +122,7 @@
               <string> lettres</string>
              </property>
              <property name="minimum">
-              <number>1</number>
+              <number>2</number>
              </property>
              <property name="value">
               <number>3</number>
@@ -411,6 +411,19 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
         <string>Génération de mots</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
+        <item row="4" column="1">
+         <spacer name="verticalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_tailleMots">
           <property name="text">
@@ -554,19 +567,6 @@ Mais ce traitement est long et nul ! Oui, mais je me suis fait chier à le coder
         </item>
         <item row="8" column="1">
          <spacer name="verticalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="4" column="1">
-         <spacer name="verticalSpacer_6">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>

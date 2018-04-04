@@ -1,10 +1,11 @@
 #include <vector>
 #include <sstream>
 //#include <string>
-//#include <iostream>
+#include <iostream>
 //#include <cstdlib>
 #include "fonctions.h"
 #include "fenetreprincipale.h"
+
 
 using namespace std;
 
@@ -92,7 +93,7 @@ void QanalyzeWord(const QString &lemot, map<vector<QChar>, pair<int,double>> &ch
         }
     }
     //Indication de dernier charactère=vide
-    suiteLettres[lcoh-1]='\0'; //TODO : whatdafuck?? c'est quoi c'est trucs chinois ?
+    suiteLettres[lcoh-1]='\0';
     charmap[suiteLettres].first++;
 
     return;
@@ -150,8 +151,46 @@ string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, boo
             }
         }
         cePr[cePr.size()-1] = it->first.back();
-    } while ( ((it->first.back()!='\0') || forcedSize) && monmot.size() <= maxsize);
+    } while ( ((it->first.back()!='\0') || forcedSize) && (uint)monmot.size() <= maxsize);
     //TODO : si des bugs arrivent... peut être lié au mention 'forcedsize' et if... ligne 144 qui n'ont
     //pas été proprement testée par flemme
     return monmot.toStdString();
+}
+
+void triParTaille(QString &liste_mots) {
+    QStringList splitted(liste_mots.split('\n'));
+
+    Qquicksort(splitted, 0, splitted.size()-1);
+
+    liste_mots = splitted.join("\n");
+
+//    for (int i = 0; i < splitted.size(); ++i)
+//         std::cout << splitted.at(i).toLocal8Bit().constData() << std::endl;
+}
+
+void Qechanger(QStringList &liste, int a, int b) {
+    QString temp = liste.at(a);
+    liste.replace(a, liste.at(b));
+    liste.replace(b,temp);
+}
+
+void Qquicksort(QStringList &liste, int debut, int fin) {
+    int gauche=debut-1;
+    int droite=fin+1;
+    const int pivot = liste.at(debut).size();
+
+    if(debut>=fin)
+        return;
+
+    while(1) {
+        do {droite--; } while(liste.at(droite).size() > pivot);
+        do gauche++; while(liste.at(gauche).size() < pivot);
+
+        if(gauche < droite)
+            Qechanger(liste, gauche, droite);
+        else break;
+    }
+
+    Qquicksort(liste, debut, droite);
+    Qquicksort(liste, droite+1, fin);
 }

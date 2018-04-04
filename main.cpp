@@ -6,6 +6,8 @@
  */
 
 #include <QtWidgets>
+#include <random>
+#include <time.h>
 #include "fenetreprincipale.h"
 #include "fonctions.h"
 
@@ -23,6 +25,8 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    srand(time(NULL));
 
     /*Traduction des texte automatique en fr*/
     QString locale = QLocale::system().name().section('_', 0, 0);

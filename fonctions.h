@@ -20,4 +20,8 @@ std::string Qgenerateur(std::map<std::vector<QChar>, std::pair<int,double>> &cha
 
 std::string retireAccent(std::string &message);
 
+void triParTaille(QString &liste_mots);
+void Qechanger(QStringList &liste, int a, int b);
+void Qquicksort(QStringList &liste, int debut, int fin);
+
 #endif // FONCTIONS

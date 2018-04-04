@@ -5,6 +5,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QMessageBox>
+#include <QShortcut>
 #include "fenetreprincipale.h"
 #include "ui_fenetreprincipale.h"
 #include <string>
@@ -90,6 +91,9 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     QObject::connect(ui->radio_langPerso, SIGNAL(clicked()), this, SLOT(liste_modifie()));
     QObject::connect(ui->bouton_selecFichier, SIGNAL(clicked()), this, SLOT(liste_modifie()));
 
+    //Raccourci clavier
+    new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(on_bouton_generer_clicked()));
+
     //Quitter via le menu
     QObject::connect(ui->actionQuitter_3, SIGNAL(triggered()), qApp, SLOT(quit()));
 }
@@ -133,7 +137,6 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
                                   "\nn'a pas pu être lue. Vérifiez qu'elle existe bien et est une liste de mots au format .txt, 1 mot par ligne");
         ui->onglet_analyse->setEnabled(true);
         ui->centralwidget->unsetCursor();
-        //TODO : indiquer erreur sur la liste de mot
         return;
     }
 
@@ -262,8 +265,6 @@ void FenetrePrincipale::on_bouton_generer_clicked() {
     if(taille_max==0)
         taille_max=100;
 
-    //TODO : obliger la réanalyse si on change lcoh (ou autre chose)
-
     std::string mot;
     for (int i=0; i<ui->spin_nbMots->value(); i++) {
         if(analyse==utf_8)
@@ -303,7 +304,9 @@ void FenetrePrincipale::on_bouton_nettoyer_clicked() {
 }
 
 void FenetrePrincipale::on_bouton_trier_clicked() {
-    //TODO : immplémenter le tri par taille des mots
+    QString text = ui->text_mots->toPlainText();
+    triParTaille(text);
+    ui->text_mots->setText(text);
 }
 
 void FenetrePrincipale::on_actionAide_triggered() {
@@ -327,6 +330,7 @@ void FenetrePrincipale::on_actionUtiliser_les_valeur_actuelles_par_defaut_trigge
                                   "    - Le nombre de mot à générer\n"
                                   "    - La taille maximale des mots\n",
                                   QMessageBox::Yes|QMessageBox::No);
+    //TODO : mieux que ça ! Heuresement qu'il n'y a que 5 paramètres...
     if (reply == QMessageBox::Yes) {
         //préparation pour écriture du chemin de la liste de mot
         QFile file("WordLists/Parametres.xml");
