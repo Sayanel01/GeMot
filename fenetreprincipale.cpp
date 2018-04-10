@@ -8,9 +8,9 @@
 #include <QShortcut>
 #include "fenetreprincipale.h"
 #include "ui_fenetreprincipale.h"
-#include <string>
 
-#include <iostream>
+//#include <string>
+//#include <iostream>
 
 FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     QMainWindow(parent),
@@ -23,6 +23,9 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
                                  "Si plusieurs mots par lignes, seul le premier est pris en compte");
         ui->radio_langPerso->setToolTip(ListeMotsInstruction);
         ui->bouton_selecFichier->setToolTip(ui->radio_langPerso->toolTip());
+
+    //Adaptation de la progressbar
+    ui->progr_Analyse->setAlignment(Qt::AlignCenter);
 
     //Éléments de la statusbar
     ui->statusbar->setFixedHeight(20);
@@ -93,8 +96,6 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
 
     //Raccourci clavier
     new QShortcut(QKeySequence(Qt::Key_Return || Qt::Key_Enter), this, SLOT(on_bouton_generer_clicked()));
-//    new QShortcut(QKeySequence(Qt::Key_Alt && Qt::Key_Space), this, SLOT(on_bouton_analyser_clicked()));
-
     //Quitter via le menu
     QObject::connect(ui->actionQuitter_3, SIGNAL(triggered()), this, SLOT(quit_troll()));
 }
@@ -112,13 +113,23 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     ui->statusbar->setToolTip("");
     int avRecup(5), avAnal(90), avProbatab(5); //doit sommer a 100. Avancement (%) de chaque étape
 
+    charmap.clear();
+
 //Partie 1 : Récupération de la liste de mots
     ui->statusbar->showMessage("Récupération de la liste de mots...");
     //Choix liste mot (selon valeur radio)
     if (ui->radio_langDef->isChecked()) {
         nomListeMots = nomListeMotsDefaut;
     }
-    else if (ui->radio_langPerso->isChecked()) {} //rien à faire...
+    else if (ui->radio_langPerso->isChecked()) {
+        QFileInfo fi(nomListeMots);
+        if (fi.fileName() != ui->bouton_selecFichier->text()) {
+            ui->statusbar->showMessage("Problème sur le nom de la liste de mot. Veuillez reselectionner un liste de mot");
+            ui->onglet_analyse->setEnabled(true);
+            ui->centralwidget->unsetCursor();
+            return;
+        }
+    } //vérification qu'on ne va pas refaire l'analyse par défaut
     else { //Trololol inutile
         ui->progr_Analyse->setValue(42);
         ui->statusbar->showMessage("How did you do that ? En plus maintenant, t'as un pointeur de merde :p");
@@ -245,6 +256,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     ui->onglet_analyse->setEnabled(true);
     ui->centralwidget->unsetCursor();
 
+
     //Supprime les warning de changement
     traitement_modifie();
     on_spin_lcoh_valueChanged(lcoh);
@@ -277,7 +289,7 @@ void FenetrePrincipale::on_bouton_generer_clicked() {
 }
 
 void FenetrePrincipale::on_bouton_selecFichier_clicked() {
-    nomListeMots = QFileDialog::getOpenFileName(this, "Selectionner une liste de mot .txt", "", "Fichier texte (*.txt)");
+    nomListeMots = QFileDialog::getOpenFileName(this, "Selectionner une liste de mot .txt", "WordLists", "Fichier texte (*.txt)");
     QFile file(nomListeMots);
     QFileInfo fileinfo(file);
     liste_modifie();

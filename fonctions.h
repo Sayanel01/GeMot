@@ -1,10 +1,9 @@
 #ifndef FONCTIONS
 #define FONCTIONS
-//Fonction déclarées dans les fichiers fn_XXXXX.cpp
 
+#include <map>
 #include <vector>
 #include <fstream>
-#include <map>
 #include <QString>
 #include "fenetreprincipale.h"
 

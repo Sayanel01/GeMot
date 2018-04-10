@@ -51,8 +51,8 @@ private slots:
 private:
     Ui::FenetrePrincipale *ui;
 
-    QString nomListeMotsDefaut;
-//    QString nomListeMotsDefaut="WordLists/Mots_FR_avec_frequence.txt";
+//    QString nomListeMotsDefaut;
+    QString nomListeMotsDefaut="WordLists/Mots_FR_full.txt";
     double probatab[27][27][27] = {{{0}}}; //pour methode nulle
     std::map<std::vector<QChar>, std::pair<int,double>> charmap; //pour methode un peu mieux
 

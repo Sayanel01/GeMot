@@ -1,11 +1,11 @@
 #include <vector>
 #include <sstream>
-//#include <string>
 #include <iostream>
-//#include <cstdlib>
 #include "fonctions.h"
 #include "fenetreprincipale.h"
 
+//#include <string>
+//#include <cstdlib>
 
 using namespace std;
 
@@ -80,8 +80,6 @@ int analyzeWord(string &lemot, int lettertab[27][27][27], bool ClearAccent) {
 }
 
 void QanalyzeWord(const QString &lemot, map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, int &nb) {
-    //suiteLettres[size-1]=act;
-    //suiteLettres[size-2]=pr1;
     vector<QChar> suiteLettres(lcoh,'\0'); //vecteur de longueur lcoh, initialisé à \0
 
     for(int i=0; i<lemot.size(); i++) {
@@ -95,7 +93,6 @@ void QanalyzeWord(const QString &lemot, map<vector<QChar>, pair<int,double>> &ch
     //Indication de dernier charactère=vide
     suiteLettres[lcoh-1]='\0';
     charmap[suiteLettres].first++;
-
     return;
 }
 
@@ -121,6 +118,8 @@ string generateur (double probatab[27][27][27], bool forcedSize, uint maxsize) {
 }
 
 string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, bool forcedSize, uint maxsize) {
+    srand(time(NULL));
+
     QString monmot="";
     vector<QChar> cePr(lcoh-1,'\0');
 
@@ -151,9 +150,8 @@ string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, boo
             }
         }
         cePr[cePr.size()-1] = it->first.back();
-    } while ( ((it->first.back()!='\0') || forcedSize) && (uint)monmot.size() <= maxsize);
-    //TODO : si des bugs arrivent... peut être lié au mention 'forcedsize' et if... ligne 144 qui n'ont
-    //pas été proprement testée par flemme
+    } while ( (it->first.back()!='\0') && (uint)monmot.size() <= maxsize);
+    //TODO : corriger bug forcedsize
     return monmot.toStdString();
 }
 
