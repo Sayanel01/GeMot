@@ -118,8 +118,6 @@ string generateur (double probatab[27][27][27], bool forcedSize, uint maxsize) {
 }
 
 string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, bool forcedSize, uint maxsize) {
-    srand(time(NULL));
-
     QString monmot="";
     vector<QChar> cePr(lcoh-1,'\0');
 
@@ -128,26 +126,22 @@ string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, boo
     map<vector<QChar>, pair<int,double>>::iterator it, itLow, itHigh;
     //itLow : itérateur vers le premier éléments de la map ayant ce Pr
     //itHigh: itérateur vers l'élément suivant le dernier éléments de la map ayant ce Pr
-    int compt=0;
+
     do {
-        compt++;
         cePrMin=cePr;   cePrMin.push_back(QChar::Null);
         cePrMax=cePr;   cePrMax.push_back(QChar::LastValidCodePoint);
 
         itLow = charmap.lower_bound(cePrMin);
         itHigh = charmap.upper_bound(cePrMax);
         it = itLow;
+
         double r = (double)rand() / RAND_MAX;
         while (r > it->second.second && it != itHigh) {
             it++;
         }
-        if (it==itHigh || it==prev(itHigh))
-            it=itLow;
-        if(it->first.back() != '\0' || monmot.size()==0) {
-            monmot += QString(it->first.back());
-            for(uint i=0; i<cePr.size()-1; i++) {
-                cePr[i] = cePr[i+1];
-            }
+        monmot += QString(it->first.back());
+        for(uint i=0; i<cePr.size()-1; i++) {
+            cePr[i] = cePr[i+1];
         }
         cePr[cePr.size()-1] = it->first.back();
     } while ( (it->first.back()!='\0') && (uint)monmot.size() <= maxsize);
