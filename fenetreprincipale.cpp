@@ -9,9 +9,6 @@
 #include "fenetreprincipale.h"
 #include "ui_fenetreprincipale.h"
 
-//#include <string>
-//#include <iostream>
-
 FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::FenetrePrincipale)
@@ -95,7 +92,7 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
     QObject::connect(ui->bouton_selecFichier, SIGNAL(clicked()), this, SLOT(liste_modifie()));
 
     //Raccourci clavier
-    new QShortcut(QKeySequence(Qt::Key_Return || Qt::Key_Enter), this, SLOT(on_bouton_generer_clicked()));
+    //new QShortcut(QKeySequence(Qt::Key_Return || Qt::Key_Enter), this, SLOT(on_bouton_generer_clicked()));
     //Quitter via le menu
     QObject::connect(ui->actionQuitter_3, SIGNAL(triggered()), this, SLOT(quit_troll()));
 }
@@ -105,11 +102,15 @@ FenetrePrincipale::~FenetrePrincipale()
     delete ui;
 }
 
+/*TODO : Utiliser les probabilité d'occurence des mots
+ * Certaines liste (comme la liste courte) indiquent la proba d'occurence de chaque mot
+ * On pourrait utiliser cela pour reduire l'importance des enchaînements de lettre des
+ * mots rare (et inversement augementer pour les mots courrants)
+ * */
 void FenetrePrincipale::on_bouton_analyser_clicked() {
     ui->centralwidget->setCursor(Qt::WaitCursor);
     ui->onglet_analyse->setEnabled(false);
     ui->progr_Analyse->setValue(0); //inutile.
-    ui->tabWidget->setTabIcon(0,QIcon());
     ui->statusbar->setToolTip("");
     int avRecup(5), avAnal(90), avProbatab(5); //doit sommer a 100. Avancement (%) de chaque étape
 
@@ -151,6 +152,8 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
         ui->centralwidget->unsetCursor();
         return;
     }
+
+    ui->tabWidget->setTabIcon(0,QIcon()); //L'icone 'warning' nest retirée que si la première étape marche (pas de return dans les étape 2 et 3
 
 //Partie 2 et 3 : Analyse liste mots / construction des proba
     ui->statusbar->showMessage("Analyse de la liste de mots...");
@@ -199,9 +202,9 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
 //Traitement terminé. Indication lié au traitement utf_8
         analyse = utf_8;
         ui->check_forcerTaille->setEnabled(false);
-        ui->check_forcerTaille->setToolTip("Un bug très (très) idiot empêche de forcer la taille des mots "
+        ui->check_forcerTaille->setToolTip("Un bug très (très) idiot empêche de forcer la taille des mots\n"
                                            "avec la méthode gérant tous les type de caractères\n"
-                                           "Non, je n'ai pas réussi à corriger ça, désolé.");
+                                           "Oui, désolé, j'ai eu la flemme de corriger ça");
         ui->label_resume_analyse->setText("Type d'analyse : tous caractères spéciaux");
         ui->label_resume_lcoh->setText("Longueur de cohérence : "+QString::number(lcoh));
     }
@@ -209,12 +212,12 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     else { //Traitement à l'ancienne (radio Ignore et radio gère très mal
         int lettertab[27][27][27] = {0}; //--> lettertab[2][1][3] = nombre d'occurence de "cab" ("3","1","2")
         int nb=0; //nombre total de lettres traités
-        bool clearAccent = ui->radio_minable->isChecked(); //ascii ou asciiplus
+        bool clearAccent = ui->radio_minable->isChecked(); //ascii (false) ou asciiplus (true)
         for(unsigned int i=0; i<mots.size(); i++) {
             nb += analyzeWord(mots[i], lettertab, clearAccent);
             if (i%500==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
                 ui->progr_Analyse->setValue(avRecup+i/(float)mots.size()*avAnal);
-                QCoreApplication::processEvents(); //permet l'actualisation du gui. Ralenti les calcul...
+                QCoreApplication::processEvents(); //permet l'actualisation du gui. Ralenti les calculs...
             }
         }
 
@@ -282,7 +285,7 @@ void FenetrePrincipale::on_bouton_generer_clicked() {
     for (int i=0; i<ui->spin_nbMots->value(); i++) {
         if(analyse==utf_8)
             mot = Qgenerateur(charmap,lcoh, ui->check_forcerTaille->isChecked(), taille_max);
-        if(analyse==ascii)
+        if(analyse==ascii || analyse==asciiplus)
             mot = generateur(probatab, ui->check_forcerTaille->isChecked(), taille_max);
         ui->text_mots->append(QString::fromStdString(mot));
     }

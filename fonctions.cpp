@@ -4,8 +4,9 @@
 #include "fonctions.h"
 #include "fenetreprincipale.h"
 
-//#include <string>
-//#include <cstdlib>
+//Fonction commencant par Q = fonction pour le traitement gérant tout les type de
+//caratère et la longueur de cohérence (Q pour le Q de QString, le moyen le plus
+//simple de gérer l'utf-8 (j'ai pas les wchar_t. C'est nul et pas pratique)
 
 using namespace std;
 
@@ -13,12 +14,16 @@ void extractWords(ifstream &liste, vector<string> &mots, vector<float> &proba) {
     int nb_lignes = 0; //nombre de lignes de la liste
     string line; //ligne du fichier en train d'être lue
     for (nb_lignes; getline(liste,line); nb_lignes++) {}; //récupère le nombre de ligne de la liste
+    //NON, espèce de compilateur coprolithique de bas fond, cette instruction ne fait pas rien, elle change la valeur de nb_lignes
 
     liste.clear();
     liste.seekg(0, ios::beg); //replace le curseur au début
 
     getline(liste, line);
     nb_lignes--; //Passe la première ligne (commentaires)
+    /*TODO : mettre en place un vrai gestion des commentaire de début (sur une ou plusieurs lignes
+     * A déjà été fait dans le projet cpp 2A traitement d'image --> à reprendre
+     * */
 
     mots.resize(nb_lignes);
     proba.resize(nb_lignes);
@@ -145,22 +150,18 @@ string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, boo
         }
         cePr[cePr.size()-1] = it->first.back();
     } while ( (it->first.back()!='\0') && (uint)monmot.size() <= maxsize);
-    //TODO : corriger bug forcedsize
+    //TODO : implémenter le forced size (pour le moment bug car si it atteint la fin (=fin de mot sans forcedsize), pb pour le remettre où il faut (je crois)(je sais plus))
     return monmot.toStdString();
 }
 
 void triParTaille(QString &liste_mots) {
     QStringList splitted(liste_mots.split('\n'));
-
     Qquicksort(splitted, 0, splitted.size()-1);
-
     liste_mots = splitted.join("\n");
-
-//    for (int i = 0; i < splitted.size(); ++i)
-//         std::cout << splitted.at(i).toLocal8Bit().constData() << std::endl;
 }
 
 void Qechanger(QStringList &liste, int a, int b) {
+    //Fonction utilisée par le tri quicksort
     QString temp = liste.at(a);
     liste.replace(a, liste.at(b));
     liste.replace(b,temp);
