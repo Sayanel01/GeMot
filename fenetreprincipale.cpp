@@ -1,11 +1,11 @@
 #include <QFileDialog>
 #include <QProgressBar>
 #include <QTimer>
-#include <thread>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QMessageBox>
 #include <QShortcut>
+#include <thread>
 #include "fenetreprincipale.h"
 #include "ui_fenetreprincipale.h"
 
@@ -99,8 +99,31 @@ FenetrePrincipale::FenetrePrincipale(QWidget *parent) :
 
 FenetrePrincipale::~FenetrePrincipale()
 {
-    delete ui;
+//    delete ui;
 }
+
+FenetrePrincipale::type_Trait FenetrePrincipale::selectedTrait() {
+    if(ui->radio_ignore->isChecked())
+        return ascii;
+    else if(ui->radio_minable->isChecked())
+        return asciiplus;
+    else if(ui->radio_speciaux->isChecked())
+        return utf_8;
+    else
+        return aucun;
+}
+
+FenetrePrincipale::type_Trait FenetrePrincipale::stringToType(QString stringType) {
+    if (stringType == "ascii")
+        return FenetrePrincipale::ascii;
+    else if (stringType == "asciiplus")
+        return FenetrePrincipale::asciiplus;
+    else if (stringType == "utf_8")
+        return FenetrePrincipale::utf_8;
+    else
+        return FenetrePrincipale::aucun;
+}
+
 
 /*TODO : Utiliser les probabilité d'occurence des mots
  * Certaines liste (comme la liste courte) indiquent la proba d'occurence de chaque mot
@@ -160,43 +183,43 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     int nb=0; //nombre de lettres traitées
 //Partie 2 version A :
     if(ui->radio_speciaux->isChecked()) { //Traitement moderne
-        lcoh = ui->spin_lcoh->value();
+        lcoh = uint( ui->spin_lcoh->value()) ;
         for(uint i=0; i<mots.size(); i++) {
             QString qmot=QString::fromStdString(mots[i]);
             QanalyzeWord(qmot,charmap, lcoh, nb);
             if (i%500==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
-                ui->progr_Analyse->setValue(avRecup+i/(float)mots.size()*avAnal);
+                ui->progr_Analyse->setValue(int(avRecup+i/float(mots.size())*avAnal));
                 QCoreApplication::processEvents(); //permet l'actualisation du gui. Ralenti les calcul...
             }
         }
 
 //Partie 3 vA : Création des proba de chaque enchaînement de lettre
         ui->statusbar->showMessage("Liste de mots analysée. Analyse de l'analyse en cours...");
-        std::map<std::vector<QChar>, std::pair<int,double>>::iterator it = charmap.begin() , cePrDebut , cePrFin;
-        //cePrDebut et cePrFin sont des itérateur indiquant le début et la fin de l'enchaînement de lettre examiné actuellement
+            std::map<std::vector<QChar>, std::pair<int,double>>::iterator it = charmap.begin() , cePrBegin , cePrEnd;
+        //cePrBegin and cePrFin are iterators to the beginning and the end of the letter chain currently on the scope
 
         while(it!=charmap.end()) {
-            //pr = sous vecteur de it->first de [0] #FFBF00à [lcoh-2] : contient lcoh-1 éléments
+            //pr = sous vecteur de it->first de [0] à [lcoh-2] : contient lcoh-1 éléments
             //c'est l'enchainement de lettres précédente --> utilisé pour déterminer la proba de l'actuelle
-            std::vector<QChar> pr(&it->first[0], &it->first[lcoh-1]);
-            cePrDebut = it;
-            int nbtlsuiv = 0; //nb tot de lettre suivant l'enchainement 'pr[0]pr[1]...'
+            std::vector<QChar> cePr(&it->first[0], &it->first[lcoh-1]);
+            cePrBegin = it;
+            int nbPosLet = 0; //number of possible letters after 'cePr'
 
-            //1er parcours : compter occurence de chaque pr
+            //We go from cePrBeging to cePrEnd 2 times:
+            //1st: counting occurence of each chain
             // /!\ à l'odre des condition du while : il ne faut pas appeler it si it=end() --> vérification end en premier
-            while( (it!=charmap.end()) && (pr==std::vector<QChar>(&it->first[0], &it->first[lcoh-1])) ) {
+            while( (it!=charmap.end()) && (cePr==std::vector<QChar>(&it->first[0], &it->first[lcoh-1])) ) {
                 //tant que l'enchainement des lettres précédentes (défini dans pr) ne change pas, on additionne le nombre d'occurence
-                nbtlsuiv += it->second.first; //it->second = la pair / .first -> le 'int'=nb d'occurence
-                it++; //passage au membre suivant
+                nbPosLet += it->second.first; //it->second = the pair in the charmap / then .first = the 'int'= nb of occurences
+                it++;
             }
-            cePrFin = it;
+            cePrEnd = it;
 
-            //2e  parcours : diviser enchainement/occurence total du pr + additionner (pour proba cumul)
-            //on repasse sur la partie déjà vue : de cePrDebut à cePrFin
-            for(std::map<std::vector<QChar>, std::pair<int,double>>::iterator repasse = cePrDebut; repasse!=cePrFin && repasse!=charmap.end(); ++repasse) {
-                repasse->second.second = (double)repasse->second.first / nbtlsuiv;
-                if (repasse != cePrDebut && repasse!=charmap.begin() )
-                    repasse->second.second += prev(repasse)->second.second; //prev() = élément précédent
+            //2nd: dividing occurence number / total + add (we are doing cumulative probability)
+            for(std::map<std::vector<QChar>, std::pair<int,double>>::iterator secondPass = cePrBegin; secondPass!=cePrEnd && secondPass!=charmap.end(); ++secondPass) {
+                secondPass->second.second = double(secondPass->second.first) / nbPosLet;
+                if (secondPass != cePrBegin && secondPass!=charmap.begin() )
+                    secondPass->second.second += prev(secondPass)->second.second; //prev() = previous element
             }
         }
 //Traitement terminé. Indication lié au traitement utf_8
@@ -210,13 +233,13 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
     }
 //Patie 2 version B :
     else { //Traitement à l'ancienne (radio Ignore et radio gère très mal
-        int lettertab[27][27][27] = {0}; //--> lettertab[2][1][3] = nombre d'occurence de "cab" ("3","1","2")
+        int lettertab[27][27][27] = {{{0}}}; //--> lettertab[2][1][3] = nombre d'occurence de "cab" ("3","1","2")
         int nb=0; //nombre total de lettres traités
         bool clearAccent = ui->radio_minable->isChecked(); //ascii (false) ou asciiplus (true)
         for(unsigned int i=0; i<mots.size(); i++) {
             nb += analyzeWord(mots[i], lettertab, clearAccent);
             if (i%500==0) { //Possibilité : 10000 (haché), 100000 (3 étapes)
-                ui->progr_Analyse->setValue(avRecup+i/(float)mots.size()*avAnal);
+                ui->progr_Analyse->setValue(int(avRecup+i/float(mots.size())*avAnal));
                 QCoreApplication::processEvents(); //permet l'actualisation du gui. Ralenti les calculs...
             }
         }
@@ -230,7 +253,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
                     nbtlsuiv += lettertab[i][j][k];
                 }
                 for (uint i=0;i<27;i++) {
-                    probatab[i][j][k] =  (double)lettertab[i][j][k] / nbtlsuiv;
+                    probatab[i][j][k] =  double(lettertab[i][j][k]) / nbtlsuiv;
                     if(i!=0)
                         probatab[i][j][k] += probatab[i-1][j][k]; //Transformation en proba cumulative
                 }
@@ -262,7 +285,7 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
 
     //Supprime les warning de changement
     traitement_modifie();
-    on_spin_lcoh_valueChanged(lcoh);
+    on_spin_lcoh_valueChanged(int(lcoh));
         QFile file(nomListeMots); QFileInfo fileinfo(file);
         nomListeAnalysePrecedente=fileinfo.fileName(); //récupération du nom de la liste de mots
     liste_modifie();
@@ -273,18 +296,18 @@ void FenetrePrincipale::on_bouton_analyser_clicked() {
 
 void FenetrePrincipale::on_bouton_generer_clicked() {
     ui->check_troll->setChecked(false);
-    if ((analyse==aucun)) {
+    if (analyse==aucun) {
         ui->statusbar->showMessage("Vous devez analyser une liste de mots avant de générer des mots");
         return; }
 
-    uint taille_max = ui->spin_tailleMax->value();
+    uint taille_max = uint(ui->spin_tailleMax->value());
     if(taille_max==0)
         taille_max=100;
 
     std::string mot;
     for (int i=0; i<ui->spin_nbMots->value(); i++) {
         if(analyse==utf_8)
-            mot = Qgenerateur(charmap,lcoh, ui->check_forcerTaille->isChecked(), taille_max);
+            mot = Qgenerateur(charmap,lcoh,taille_max);
         if(analyse==ascii || analyse==asciiplus)
             mot = generateur(probatab, ui->check_forcerTaille->isChecked(), taille_max);
         ui->text_mots->append(QString::fromStdString(mot));
@@ -430,7 +453,7 @@ void FenetrePrincipale::check_analyse_changed() {
 }
 
 void FenetrePrincipale::on_spin_lcoh_valueChanged(int value) {
-    if( (analyse==type_Trait::utf_8) & ((uint)value!=lcoh) ) {
+    if( (analyse==type_Trait::utf_8) & (uint(value)!=lcoh) ) {
         ui->spin_lcoh->setStyleSheet("background-color: #FFBF00");
         lcoh_changed = true; }
     else {
@@ -466,27 +489,6 @@ void FenetrePrincipale::traitement_modifie() {
     check_analyse_changed();
 }
 
-FenetrePrincipale::type_Trait FenetrePrincipale::selectedTrait() {
-    if(ui->radio_ignore->isChecked())
-        return ascii;
-    else if(ui->radio_minable->isChecked())
-        return asciiplus;
-    else if(ui->radio_speciaux->isChecked())
-        return utf_8;
-    else
-        return aucun;
-}
-
-FenetrePrincipale::type_Trait FenetrePrincipale::stringToType(QString stringType) {
-    if (stringType == "ascii")
-        return FenetrePrincipale::ascii;
-    else if (stringType == "asciiplus")
-        return FenetrePrincipale::asciiplus;
-    else if (stringType == "utf_8")
-        return FenetrePrincipale::utf_8;
-    else
-        return FenetrePrincipale::aucun;
-}
 
 void FenetrePrincipale::liste_modifie() {
     if(analyse!=aucun) {

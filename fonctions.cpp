@@ -6,37 +6,34 @@
 
 //Fonction commencant par Q = fonction pour le traitement gérant tout les type de
 //caratère et la longueur de cohérence (Q pour le Q de QString, le moyen le plus
-//simple de gérer l'utf-8 (j'ai pas les wchar_t. C'est nul et pas pratique)
+//simple de gérer l'utf-8 (j'aime pas les wchar_t. C'est nul et pas pratique)
 
 using namespace std;
 
 void extractWords(ifstream &liste, vector<string> &mots, vector<float> &proba) {
-    int nb_lignes = 0; //nombre de lignes de la liste
-    string line; //ligne du fichier en train d'être lue
-    for (nb_lignes; getline(liste,line); nb_lignes++) {}; //récupère le nombre de ligne de la liste
-    //NON, espèce de compilateur coprolithique de bas fond, cette instruction ne fait pas rien, elle change la valeur de nb_lignes
+    uint nb_lignes = 0; //number of lines on the wordlist
+    string line; //last read line
+    for (; getline(liste,line); nb_lignes++) {}; //Get number of lines
 
     liste.clear();
-    liste.seekg(0, ios::beg); //replace le curseur au début
+    liste.seekg(0, ios::beg); //going back to beginning of the file
 
     getline(liste, line);
-    nb_lignes--; //Passe la première ligne (commentaires)
-    /*TODO : mettre en place un vrai gestion des commentaire de début (sur une ou plusieurs lignes
-     * A déjà été fait dans le projet cpp 2A traitement d'image --> à reprendre
-     * */
+    nb_lignes--; //Ignore first line
+    //TODO : manage comments on the file, e.g. lines beginning by //
 
     mots.resize(nb_lignes);
     proba.resize(nb_lignes);
-    for (int i=0; i<nb_lignes; i++) {
+    for (uint i=0; i<nb_lignes; i++) {
         getline(liste, line);
 
         string sproba;
         stringstream ss;
         ss << line;
-        ss >> mots[i] >> sproba; //divise la ligne en deux (mot / proba du mot)
-        if(sproba!="") //si la liste ne comprend pas de fréquence, sproba sera une chaine vide
-            proba[i]=std::stof(sproba); //converti la proba en float
-        else
+        ss >> mots[i] >> sproba; // get 1st word = actual word and 2nd word = occurence probability
+        if(sproba!="")
+            proba[i]=stof(sproba); //conversion to float
+        else  //if no word probability is indicated, set it at 0
             proba[i]=0;
     }
     liste.close();
@@ -47,7 +44,8 @@ string retireAccent(string &message)
 {
     string accent("ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÌÍÎÏìíîïÙÚÛÜùúûüÿÑñÇç");
     string sansAccent("AAAAAAaaaaaaOOOOOOooooooEEEEeeeeIIIIiiiiUUUUuuuuyNnCc");
-    int i=0,j=0,k=0,taille;
+    uint i=0,j=0,k=0;
+    size_t taille;
     taille=message.size();
     for (i=0;i<=taille;i++) {
         for(j=0;j<=104;j=j+2) {
@@ -64,40 +62,41 @@ string retireAccent(string &message)
     return message;
 }
 
-int analyzeWord(string &lemot, int lettertab[27][27][27], bool ClearAccent) {
-    int pr1=0; //lettre précédente, intialisée à rien (0)
-    int pr2=0; //lettre présente 2 lettre avant, intialisée à rien (0)
-    int act; //lettre actuelle
+int analyzeWord(string &word, int lettertab[27][27][27], bool ClearAccent) {
+    int pr1=0; //previous letter, default is nothing (0)
+    int pr2=0; //second-to-last letter, default is nothing (0)
+    int curr; //lettre actuelle
     int nb=0; //nombre total de lettre traitées
-    for(unsigned int i=0; i<lemot.size(); i++) {
+    for(unsigned int i=0; i<word.size(); i++) {
         if(ClearAccent==true)
-            lemot=retireAccent(lemot);
-        act=lemot.at(i)-96; // retourne le code ascii de la lettre, puis ramené à a=1
-        if(act>0 && act <27) { //on ignore tout caractère accentué
-            lettertab[act][pr1][pr2]++;
+            word=retireAccent(word);
+        curr=word.at(i)-96; // returns ascii code for the letter
+        if(curr>0 && curr <27) { //ignoring accentuated letter
+            lettertab[curr][pr1][pr2]++;
             pr2=pr1;
-            pr1=act; //lettre actuelle devient la précédente
+            pr1=curr; //current letter is now previous letter
             nb++;
         }
     }
-    lettertab[0][pr1][pr2]++; //indique que "pr2-pr1" sont les 2 dernières lettres du mot
+    lettertab[0][pr1][pr2]++; //indicates the word finishes by "...."pr2""pr1"
     return nb;
 }
 
-void QanalyzeWord(const QString &lemot, map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, int &nb) {
-    vector<QChar> suiteLettres(lcoh,'\0'); //vecteur de longueur lcoh, initialisé à \0
+void QanalyzeWord(const QString &word, map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, int &nb) {
+    vector<QChar> letterChain(lcoh,'\0');
 
-    for(int i=0; i<lemot.size(); i++) {
-        suiteLettres[lcoh-1]=lemot.at(i); //lcoh = suiteLettres.size()
-        charmap[suiteLettres].first++;
+    for(int i=0; i<word.size(); i++) {
+        letterChain[lcoh-1]=word.at(i);
+        charmap[letterChain].first++;
         nb++;
         for(uint j=0; j<lcoh-1; j++) {
-            suiteLettres[j]=suiteLettres[j+1];
+            letterChain[j]=letterChain[j+1];
         }
     }
-    //Indication de dernier charactère=vide
-    suiteLettres[lcoh-1]='\0';
-    charmap[suiteLettres].first++;
+
+    //Indicates last character is void
+    letterChain[lcoh-1]='\0';
+    charmap[letterChain].first++;
     return;
 }
 
@@ -108,12 +107,12 @@ string generateur (double probatab[27][27][27], bool forcedSize, uint maxsize) {
     int pot; //lettre potentielle
     do {
         pot=0;
-        double r = (double)rand() / RAND_MAX;
+        double r = double(rand()) / RAND_MAX;
         while (r > probatab[pot][pr1][pr2] && pot<26) {
             pot++;
         }
         if (pot!=0){ //si pot=0 (eg. fin du mot) MAIS forcedSize, alors on ignore ce caractère
-            monmot += (char)(pot+96);
+            monmot += char((pot+96));
             pr2=pr1;
             pr1=pot;
         }
@@ -122,15 +121,15 @@ string generateur (double probatab[27][27][27], bool forcedSize, uint maxsize) {
     return monmot;
 }
 
-string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, bool forcedSize, uint maxsize) {
-    QString monmot="";
-    vector<QChar> cePr(lcoh-1,'\0');
+string Qgenerateur(std::map<std::vector<QChar>, pair<int,double>> &charmap, uint lcoh, uint maxsize) {
+    QString myword="";
 
-    vector<QChar> cePrMin, cePrMax; //debut et fin des élément de la map ayant ce Pr
+    vector<QChar> cePr(lcoh-1,'\0'); //represents the chain of previous characters
+    vector<QChar> cePrMin, cePrMax; //represents the chain of previous character + the first (resp. last) possible character
     cePrMin.reserve(lcoh); cePrMax.reserve(lcoh);
     map<vector<QChar>, pair<int,double>>::iterator it, itLow, itHigh;
-    //itLow : itérateur vers le premier éléments de la map ayant ce Pr
-    //itHigh: itérateur vers l'élément suivant le dernier éléments de la map ayant ce Pr
+    //itLow : iterator to the first element of the map having this chain of previous character (=cePr)
+    //itHigh: iterator to the element after the last element of the map having this chain of previous character (=cePr)
 
     do {
         cePrMin=cePr;   cePrMin.push_back(QChar::Null);
@@ -140,18 +139,18 @@ string Qgenerateur(map<vector<QChar>, pair<int,double>> &charmap, uint lcoh, boo
         itHigh = charmap.upper_bound(cePrMax);
         it = itLow;
 
-        double r = (double)rand() / RAND_MAX;
-        while (r > it->second.second && it != itHigh) {
+        double r = double(rand())/ RAND_MAX; // 0 < r < 1
+        while (r > it->second.second && it != itHigh) { //places iterator to the 1st caracter having a probability less than r
             it++;
         }
-        monmot += QString(it->first.back());
+        myword += QString(it->first.back()); //append this caracter to the word
+
         for(uint i=0; i<cePr.size()-1; i++) {
             cePr[i] = cePr[i+1];
         }
         cePr[cePr.size()-1] = it->first.back();
-    } while ( (it->first.back()!='\0') && (uint)monmot.size() <= maxsize);
-    //TODO : implémenter le forced size (pour le moment bug car si it atteint la fin (=fin de mot sans forcedsize), pb pour le remettre où il faut (je crois)(je sais plus))
-    return monmot.toStdString();
+    } while ( (it->first.back()!='\0') && uint(myword.size()) <= maxsize);
+    return myword.toStdString();
 }
 
 void triParTaille(QString &liste_mots) {

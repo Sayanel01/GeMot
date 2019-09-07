@@ -7,10 +7,10 @@ Infos::Infos(QWidget *parent) :
 {
     ui->setupUi(this);
 
+// Make window fixed size
 #ifdef __linux__
     this->setFixedSize(this->width(),this->height());
 #elif _WIN32
-    //Taille de fenere fixe. Windows seulement
     setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
 #else
 

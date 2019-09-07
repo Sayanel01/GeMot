@@ -2,38 +2,25 @@
  * Générateur de mot aléatoire ayant une consonnance similaire
  * aux mots fournit dans un dictionnaire
  *
- * Par Philémon Giraud - 2018
+ * Par Sayanel - 2019
  */
 
 #include <QtWidgets>
-#include <random>
-#include <time.h>
 #include "fenetreprincipale.h"
 #include "fonctions.h"
-
-/*
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <cstdlib>
-#include <time.h>
-*/
-
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    srand(time(NULL));
+    srand( static_cast<unsigned int>(time(NULL)));
 
-    /*Traduction des texte automatique en fr*/
+    /*Traduction of Qt texts to Fr*/
     QString locale = QLocale::system().name().section('_', 0, 0);
     QTranslator translator;
     translator.load(QString("qt_") + locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&translator);
-    /*fin*/
+    /*end*/
 
     FenetrePrincipale fenetre;
     fenetre.show();
